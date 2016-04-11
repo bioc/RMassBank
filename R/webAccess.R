@@ -27,7 +27,7 @@ NULL
 #' @author Michael Stravs
 #' @seealso \code{\link{getCtsRecord}}, \code{\link{getPcId}}
 #' @references cactus Chemical Identifier Resolver:
-#' \url{http://cactus.nci.nih.gov/chemical/structure}
+#' \url{https://cactus.nci.nih.gov/chemical/structure}
 #' @examples
 #' 
 #' # Benzene:
@@ -41,7 +41,7 @@ getCactus <- function(identifier, representation)
 
   ret <- tryCatch(
     getURLContent(paste(
-      "http://cactus.nci.nih.gov/chemical/structure/",
+      "https://cactus.nci.nih.gov/chemical/structure/",
       URLencode(identifier), "/", representation, sep='')),
     error = function(e) NA)
   if(is.na(ret))
