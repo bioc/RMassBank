@@ -4,6 +4,7 @@
 ###############################################################################
 
 #' @import assertthat
+#' @import glue
 
 
 #' @title Build MassBank records
@@ -345,16 +346,33 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	{
 		mbdata[["PROJECT"]] <- userSettings$project
 	}
-	# Use 'simple', 'standard' or 'selfDefined' accessionBuilder
-	# depending on user input
-	if("accessionBuilderType" %in% names(userSettings))
+
+	if(is.null(userSettings$accessionBuilderType) & 
+	   ("accessionBuilder" %in% names(userSettings)))
 	{
-		assert_that(userSettings$accessionBuilderType %in% c(
+	  if(is.function(userSettings$accessionBuilder)) {
+	    assert_that(has_args(userSettings$accessionBuilder,
+	                         c('cpd', 'spectrum', 'subscan'), exact=TRUE),
+	                msg=paste('accessionBuilder must have function arguments',
+	                          'cpd, spectrum, subscan in this order'))
+	    mbdata[['ACCESSION']] <- userSettings$accessionBuilder(cpd, spectrum, subscan)
+	  }
+	    
+	  else
+	    mbdata[['ACCESSION']] <- .flexAccessionBuilder(
+	      userSettings$accessionBuilder,
+	      cpd, spectrum, subscan
+	    )
+	}
+	else if("accessionBuilderType" %in% names(userSettings)) {
+	  # Use 'simple', 'standard' or 'selfDefined' accessionBuilder
+	  # depending on user input
+		assert_that(userSettings$accessionBuilder %in% c(
 		  "standard", "simple", "selfDefined"),
 		  msg=paste("accessionNumberType must be one of",
-		  "'standard', 'simple' or 'selfDefined'"))
+		  "'standard', 'simple', 'selfDefined'"))
 		mbdata[['ACCESSION']] <- switch(
-		  userSettings$accessionBuilderType,
+		  userSettings$accessionBuilder,
 		  simple = .simpleAccessionBuilder(subscan),
 		  standard = .standardAccessionBuilder(cpd, subscan),
 		  selfDefined = .selfDefinedAccessionBuilder(cpd, spectrum,
@@ -365,6 +383,13 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	{
 		mbdata[['ACCESSION']] <- .standardAccessionBuilder(cpd, subscan)
 	}
+	
+	if(userSettings$accessionValidate) {
+	  assert_that(
+	    .accessionValidate(mbdata[['ACCESSION']]),
+	    msg = "Generated ACCESSION is invalid. You may bypass validity check with `accessionValidate: FALSE` in the RMassBank settings file."
+	  )
+	}
 
 	spectrum@info <- mbdata
 
@@ -373,7 +398,44 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	return(spectrum)
 }
 
-.simpleAccessionBuilder <- function(subscan)
+
+#' Define a programmatic ACCESSION builder
+#' @param accessionBuilder a function that takes parameters `cpd` (an instance 
+#'   of `RmbSpectraSet`), `spectrum` (an instance of `RmbSpectrum2`) and 
+#'   `subscan` (an integer denoting relative scan id) and returns a `character`
+#'   
+#' @export
+setAccessionBuilder <- function(accessionBuilder) {
+  userSettings <- getOption("RMassBank")
+  assert_that(class(accessionBuilder)=='function',
+              msg='accessionBuilder must be a function')
+  assert_that(has_args(accessionBuilder,
+                       c('cpd', 'spectrum', 'subscan'), exact=TRUE),
+              msg=paste('accessionBuilder must have function arguments',
+                        'cpd, spectrum, subscan in this order'))
+  userSettings$accessionBuilder <- accessionBuilder
+  options(RMassBank = userSettings)
+}
+
+
+.accessionValidate <- function(accession) {
+  pattern <- "^MSBNK-[A-Z0-9_]{1,32}-[A-Z0-9_]{1,64}$"
+  grepl(pattern, accession)
+}
+
+.flexAccessionBuilder <- function(string, cpd, spectrum, subscan) {
+  userSettings = getOption("RMassBank")
+  shift <- userSettings$accessionNumberShifts[[cpd@mode]]
+  variables <- list()
+  variables$compound_id <- function(digits) sprintf(glue("%0{digits}d"), as.numeric(cpd@id))
+  variables$scan_id <- function(digits) sprintf(glue("%0{digits}d"), subscan + shift)
+  variables$incremental_id <- function(digits) sprintf(glue("%0{digits}d"), userSettings$accessionNumberStart + subscan)
+  variables$entry_prefix <- userSettings$annotations$entry_prefix
+  variables$contributor_prefix <- userSettings$annotations$contributor_prefix
+  as.character(glue(string, .envir = variables))
+}
+
+.simpleAccessionBuilder <- function(cpd, spectrum, subscan)
 {
 	userSettings = getOption("RMassBank")
 	assert_that('accessionNumberStart' %in% names(userSettings),
@@ -383,16 +445,21 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	  "'standard' or 'selfDefined' to use a different accessionBuilder.", 
 	  "For detailed explanations of accessionBuilders, check out the",
 	  "'Settings' section of the RMassBank vignette."))
-	sprintf('%s%06d', userSettings$annotations$entry_prefix,
-	  subscan + userSettings$accessionNumberStart)
+	.flexAccessionBuilder("MSBNK-{contributor_prefix}-{entry_prefix}{incremental_id(6)}", 
+	                      cpd, spectrum, subscan)
 }
 
-.standardAccessionBuilder <- function(cpd, subscan)
+.legacyAccessionBuilder <- function(cpd, spectrum, subscan)
 {
-	userSettings = getOption("RMassBank")
-	shift <- userSettings$accessionNumberShifts[[cpd@mode]]
-	sprintf("%s%04d%02d", userSettings$annotations$entry_prefix,
-	  as.numeric(cpd@id), subscan+shift)
+  .flexAccessionBuilder("{entry_prefix}{incremental_id(6)}", 
+                        cpd, spectrum, subscan)
+}
+
+.standardAccessionBuilder <- function(cpd, spectrum, subscan)
+{
+  .flexAccessionBuilder("MSBNK-{contributor_prefix}-{entry_prefix}{compound_id(4)}{scan_id(2)}", 
+                        cpd, spectrum, subscan)
+  
 }
 	
 .selfDefinedAccessionBuilder <- function(cpd, spectrum, subscan)
