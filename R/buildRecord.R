@@ -346,6 +346,10 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	{
 		mbdata[["PROJECT"]] <- userSettings$project
 	}
+	
+	
+	spectrum@info <- mbdata
+	
 
 	if(is.null(userSettings$accessionBuilderType) & 
 	   ("accessionBuilder" %in% names(userSettings)))
@@ -373,10 +377,9 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 		  "'standard', 'simple', 'selfDefined'"))
 		mbdata[['ACCESSION']] <- switch(
 		  userSettings$accessionBuilder,
-		  simple = .simpleAccessionBuilder(subscan),
-		  standard = .standardAccessionBuilder(cpd, subscan),
-		  selfDefined = .selfDefinedAccessionBuilder(cpd, spectrum,
-		  subscan)
+		  simple = .simpleAccessionBuilder(cpd, spectrum, subscan),
+		  standard = .standardAccessionBuilder(cpd, spectrum, subscan),
+		  selfDefined = .selfDefinedAccessionBuilder(cpd, spectrum, subscan)
 		)
 	}
 	else
@@ -391,29 +394,35 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	  )
 	}
 
+  # and again, to get the ACCESSION back into the spectrum
 	spectrum@info <- mbdata
-
 	spectrum <- renderPeaks(spectrum, cpd=cpd, additionalPeaks=additionalPeaks, ...)
 
 	return(spectrum)
 }
 
 
-#' Define a programmatic ACCESSION builder
+#' Define a programmatic or gluey ACCESSION builder
+#' 
 #' @param accessionBuilder a function that takes parameters `cpd` (an instance 
 #'   of `RmbSpectraSet`), `spectrum` (an instance of `RmbSpectrum2`) and 
-#'   `subscan` (an integer denoting relative scan id) and returns a `character`
+#'   `subscan` (an integer denoting relative scan id) and returns a `character`.
+#'   Alternatively a glue string just like the one in the RMassBank settings.
 #'   
 #' @export
 setAccessionBuilder <- function(accessionBuilder) {
   userSettings <- getOption("RMassBank")
-  assert_that(class(accessionBuilder)=='function',
-              msg='accessionBuilder must be a function')
-  assert_that(has_args(accessionBuilder,
-                       c('cpd', 'spectrum', 'subscan'), exact=TRUE),
-              msg=paste('accessionBuilder must have function arguments',
-                        'cpd, spectrum, subscan in this order'))
-  userSettings$accessionBuilder <- accessionBuilder
+  if(is.character(accessionBuilder))
+    userSettings$accessionBuilder <- accessionBuilder
+  else {
+    assert_that(class(accessionBuilder)=='function',
+                msg='accessionBuilder must be a function')
+    assert_that(has_args(accessionBuilder,
+                         c('cpd', 'spectrum', 'subscan'), exact=TRUE),
+                msg=paste('accessionBuilder must have function arguments',
+                          'cpd, spectrum, subscan in this order'))
+    userSettings$accessionBuilder <- accessionBuilder
+  }
   options(RMassBank = userSettings)
 }
 
@@ -425,6 +434,7 @@ setAccessionBuilder <- function(accessionBuilder) {
 
 .flexAccessionBuilder <- function(string, cpd, spectrum, subscan) {
   userSettings = getOption("RMassBank")
+  adduct <- getAdductProperties(cpd@mode, "")
   shift <- userSettings$accessionNumberShifts[[cpd@mode]]
   variables <- list()
   variables$compound_id <- function(digits) sprintf(glue("%0{digits}d"), as.numeric(cpd@id))
@@ -432,6 +442,31 @@ setAccessionBuilder <- function(accessionBuilder) {
   variables$incremental_id <- function(digits) sprintf(glue("%0{digits}d"), userSettings$accessionNumberStart + subscan)
   variables$entry_prefix <- userSettings$annotations$entry_prefix
   variables$contributor_prefix <- userSettings$annotations$contributor_prefix
+  variables$collision_energy_raw <- spectrum@collisionEnergy
+  variables$metadata <- c(
+    spectrum@info$`AC$MASS_SPECTROMETRY`,
+    spectrum@info$`CH$LINK`
+  )
+  variables$metadata$INSTRUMENT_TYPE <- spectrum@info$`AC$INSTRUMENT_TYPE`
+  variables$metadata$INCHIKEY2D <- substr(spectrum@info$`CH$LINK`$INCHIKEY, 1, 14)
+  variables$info <- function(key) gsub('[^A-Z0-9]', '_', toupper(variables$metadata[[key]]))
+  variables$mode <- toupper(cpd@mode)
+  variables$mode_hash <- substr(toupper(adduct$hash), 1, .adductHashSize)
+  # a "MS condition hash" merging instrument type, ionization, collision and CE
+  # AC$INSTRUMENT_TYPE: LC-ESI-ITFT
+  # AC$MASS_SPECTROMETRY: MS_TYPE MS2
+  # AC$MASS_SPECTROMETRY: ION_MODE POSITIVE
+  # AC$MASS_SPECTROMETRY: IONIZATION ESI
+  # AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE HCD
+  # AC$MASS_SPECTROMETRY: COLLISION_ENERGY 15 % (nominal)
+  # AC$MASS_SPECTROMETRY: RESOLUTION 15000
+  variables$polarity <- function(digits=1) substr(variables$metadata$ION_MODE, 1, digits)
+  variables$condition <- glue_data(
+    variables$metadata,
+    "{INSTRUMENT_TYPE}${MS_TYPE}${ION_MODE}${IONIZATION}${FRAGMENTATION_MODE}${COLLISION_ENERGY}")
+  variables$condition_hash <- substr(
+    toupper(digest(variables$condition, serialize=FALSE)),
+    1, .adductHashSize)
   as.character(glue(string, .envir = variables))
 }
 

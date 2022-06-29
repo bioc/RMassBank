@@ -1,3 +1,5 @@
+#' @import digest
+
 
 .listEnvEnv <- new.env()
 assign("listEnv", NULL, envir=.listEnvEnv)
@@ -369,6 +371,10 @@ getIonMode <- function(mode) {
   ifelse(charge > 0, "POSITIVE", "NEGATIVE")
 }
 
+# adduct hash size. For unit testing purposes we specify this outside,
+# so we can test collision behaviour when we set it to length 2
+.adductHashSize <- 4
+
 getAdductInformation <- function(formula){
   adductDf <- as.data.frame(rbind(
     
@@ -500,13 +506,20 @@ getAdductInformation <- function(formula){
     c(mode = "",        addition = "",       charge = 0,  adductString = "[M]")
   ), stringsAsFactors = F)
   adductDf$charge <- as.integer(adductDf$charge)
-  
+  adductDf$hash <- apply(adductDf, 1, function(x) digest(glue_data(x, "{mode}$adductString"), serialize=FALSE))
   
   
   if(any(any(duplicated(adductDf$mode)), any(duplicated(adductDf$adductString)))) stop("Invalid adduct table")
+  duplicated_hash <- duplicated(substr(adductDf$hash, 1, .adductHashSize))
+  if(any(duplicated_hash)) stop(glue(
+    "DEVELOPER MESSAGE: Adducts {paste(adductDf$mode[duplicated_hash], collapse = ',')} have colliding hashes, please rename the `mode` to avoid collision!"))
+     
+  
   
   return(adductDf)
 }
+
+
 getAdductProperties <- function(mode, formula){
   if(grepl(x = mode, pattern = "pM") & is.null(formula))
     stop("Cannot calculate pM adduct without formula")
