@@ -54,3 +54,10 @@ alternativeBuilder <- function(cpd, spectrum, subscan) {
 # alternativeBuilder should be an acceptable ACCESSION builder
 expect_silent(setAccessionBuilder(alternativeBuilder))
 expect_silent(mb <- mbWorkflow(mb))
+
+
+file.copy("inst/RMB_options.ini", "rmb_options.ini")
+options <- readLines("rmb_options.ini")
+options <- options[!grepl("^accessionBuilder:", options)]
+options <- options[!grepl("^accessionBuilderType:", options)]
+options <- options[!grepl("^accessionBuilder:", options)]
