@@ -60,7 +60,7 @@ loadList <- function(path, listEnv = NULL, check = TRUE)
     
     # Do all Compoundlist IDs have 4 characters or less?
     if(any(nchar(compoundList$ID) > 4)){
-        stop("The maximum number of digits for compound IDs is 4")
+        warning("Some compound IDs are >4 digits. If using legacy ACCESSION, this will lead to information loss in the records!")
     }
     
     # Evaluate if all strictly necessary columns are in the list
