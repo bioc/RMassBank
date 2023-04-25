@@ -1640,10 +1640,11 @@ setMethod("toMassbank", "RmbSpectrum2", function(o, addAnnotation = getOption("R
 #' \code{files}, the accession number is not "accessible" anymore since it's in
 #' the file.
 #' 
-#' @usage exportMassbank(compiled, files, molfile)
+#' @usage exportMassbank(compiled, molfile = NULL)
 #' @param compiled \code{RmbSpectraSet}
-#' the spectra of one compound for which files should be exported
-#' @param molfile A molfile from \code{\link{createMolfile}}
+#'   the spectra of one compound for which files should be exported
+#' @param molfile A molfile from \code{\link{createMolfile}}; 
+#'   deprecated since molfiles are not used by MassBank anymore.
 #' @return No return value.
 #' @note An improvement would be to write the accession numbers into
 #' \code{names(compiled)} and later into \code{names(files)} so \code{compiled}

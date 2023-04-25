@@ -1273,22 +1273,26 @@ setMethod("cleanElnoise", c("RmbSpectraSet", noise="numeric", width="numeric"), 
 #' compound ID), which are very likely co-isolated substances, are ignored.
 #' 
 #' 
-#' @usage problematicPeaks(peaks_unmatched, peaks_matched, mode = "pH")
-#' @param peaks_unmatched Table of unmatched peaks, with at least \code{cpdID,
-#' scan, mzFound, int}.
-#' @param peaks_matched Table of matched peaks (used for base peak reference),
-#' with at least \code{cpdID, scan, int}.
-#' @param mode Processing mode (\code{"pH", "pNa"} etc.)
-#' @return A filtered table with the potentially problematic peaks, including
-#' the precursor mass and MSMS base peak intensity (\code{aMax}) for reference.
+#' @usage problematicPeaks(sp)
+#' @param sp a RmbSpectrum2 object to be checked for problematic peaks.
+#' 
+#' @note TODO: there is hardcoded logic in this function that needs to be
+#'  resolved eventually!
+#' @return The modified RmbSpectrum2 object with additional columns/properties 
+#'  `problematicPeaks` (logical `TRUE` if the peak is intense and unannotated),
+#'  `aMax` (base peak intensity), `mzCenter` (the precursor m/z).
 #' @author Michael Stravs
 #' @seealso \code{\link{msmsWorkflow}}
-#' @examples \dontrun{
+#' @examples 
 #' # As used in the workflow: 
-#' fp <- problematicPeaks(specs[!specs$filterOK & !specs$noise & 
-#' 						((specs$dppm == specs$dppmBest) | (is.na(specs$dppmBest)))
-#' 				,,drop=FALSE], peaksMatched(w), mode)
-#' }
+#' 
+#' sp <- new("RmbSpectrum2", mz = c(100,200,300,400,500), intensity = c(999999,888888,777777,666666,555555))
+#' sp@@ok <- TRUE
+#' property(sp, "mzFound", addNew=TRUE) <- sp@@mz
+#' sp@@good <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+#' sp@@precursorMz <- 600
+#' sp_checked <- problematicPeaks(sp)
+#' stopifnot(sum(getData(sp_checked)$problematicPeaks) == 2))
 #' @export
 problematicPeaks <- function(sp)
 {
@@ -1297,6 +1301,7 @@ problematicPeaks <- function(sp)
   sp <- addProperty(sp, "problematicPeak", "logical", FALSE)
   sp <- addProperty(sp, "aMax", "numeric", 0)
   sp <- addProperty(sp, "mzCenter", "numeric", sp@precursorMz)
+  
   peaks <- getData(sp)
   peaks$`_index` <- seq_len(nrow(peaks))
   peaks$aMax <- max(peaksMatched(peaks)$intensity)
@@ -1315,7 +1320,7 @@ problematicPeaks <- function(sp)
 		  (p_control$mzFound < p_control$mzCenter - 1) |
 		  (p_control$mzFound > p_control$mzCenter + 1),,drop=FALSE]
   if(nrow(p_control_noMH) > 0)
-    peaks[peaks$`_index` %in% p_control_noMH$`_index`]$problematicPeak <- TRUE
+    peaks[peaks$`_index` %in% p_control_noMH$`_index`,]$problematicPeak <- TRUE
   sp <- setData(sp, peaks)
   return(sp)
 }
@@ -1396,16 +1401,19 @@ processProblematicPeaks <- function(w, archivename = NA)
 #' (\code{msmsWorkflow(mode="pNa", steps=c(1:8), newRecalibration=FALSE)}).
 #' This also ensures a consistent recalibration across all spectra of the same batch. 
 #' 
-#' @usage makeRecalibration(w, mode, 
+#' @usage makeRecalibration(w,  
 #'  	recalibrateBy = getOption("RMassBank")$recalibrateBy,
 #' 		recalibrateMS1 = getOption("RMassBank")$recalibrateMS1,
 #' 		recalibrator = getOption("RMassBank")$recalibrator,
 #' 		recalibrateMS1Window = getOption("RMassBank")$recalibrateMS1Window 
 #' 		)
 #' 
-#'  recalibrateSpectra(mode, rawspec = NULL, rc = NULL, rc.ms1=NULL, w = NULL,
+#'  recalibrateSpectra(rawspec = NULL, rc = NULL, rc.ms1=NULL, w = NULL,
 #' 		recalibrateBy = getOption("RMassBank")$recalibrateBy,
 #' 		recalibrateMS1 = getOption("RMassBank")$recalibrateMS1)
+#' 
+#' 
+#' 
 #' 
 #'  recalibrateSingleSpec(spectrum, rc, 
 #' 		recalibrateBy = getOption("RMassBank")$recalibrateBy)
