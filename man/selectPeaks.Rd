@@ -53,19 +53,19 @@ Selects peaks from aggregate table according to different criteria.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{RmbSpectrum2}: A method to filter spectra to the specified peaks
+\item \code{selectPeaks(RmbSpectrum2)}: A method to filter spectra to the specified peaks
 
-\item \code{RmbSpectrum2List}: A method to filter spectra to the specified peaks
+\item \code{selectPeaks(RmbSpectrum2List)}: A method to filter spectra to the specified peaks
 
-\item \code{RmbSpectraSetList}: A method to filter spectra to the specified peaks
+\item \code{selectPeaks(RmbSpectraSetList)}: A method to filter spectra to the specified peaks
 
-\item \code{data.frame}: A method to retrieve the specified peaks from the "aggregated" slot (a data.frame object) in an msmsWorkSpace
+\item \code{selectPeaks(data.frame)}: A method to retrieve the specified peaks from the "aggregated" slot (a data.frame object) in an msmsWorkSpace
 
-\item \code{msmsWorkspace}: A method to retrieve the specified peaks from an msmsWorkSpace
+\item \code{selectPeaks(msmsWorkspace)}: A method to retrieve the specified peaks from an msmsWorkSpace
 
-\item \code{peaks = RmbSpectrum2List,noise = numeric,width = numeric}: A method to filter spectra to the specified peaks
+\item \code{cleanElnoise(peaks = RmbSpectrum2List, noise = numeric, width = numeric)}: A method to filter spectra to the specified peaks
+
 }}
-
 \author{
 stravsmi
 }

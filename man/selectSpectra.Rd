@@ -30,11 +30,11 @@ matching the conditions, or as a vector of \code{RmbSpectraSet} objects NOT matc
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{s = RmbSpectraSetList,property = character}: A method for selecting spectra from a spectra set list
+\item \code{selectSpectra(s = RmbSpectraSetList, property = character)}: A method for selecting spectra from a spectra set list
 
-\item \code{s = msmsWorkspace,property = character}: A method for selecting spectra from an msmsWorkspace
+\item \code{selectSpectra(s = msmsWorkspace, property = character)}: A method for selecting spectra from an msmsWorkspace
+
 }}
-
 \author{
 stravsmi
 }

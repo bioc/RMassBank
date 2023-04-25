@@ -2,15 +2,16 @@
 % Please edit documentation in R/buildRecord.R
 \name{setAccessionBuilder}
 \alias{setAccessionBuilder}
-\title{Define a programmatic ACCESSION builder}
+\title{Define a programmatic or gluey ACCESSION builder}
 \usage{
 setAccessionBuilder(accessionBuilder)
 }
 \arguments{
 \item{accessionBuilder}{a function that takes parameters `cpd` (an instance 
 of `RmbSpectraSet`), `spectrum` (an instance of `RmbSpectrum2`) and 
-`subscan` (an integer denoting relative scan id) and returns a `character`}
+`subscan` (an integer denoting relative scan id) and returns a `character`.
+Alternatively a glue string just like the one in the RMassBank settings.}
 }
 \description{
-Define a programmatic ACCESSION builder
+Define a programmatic or gluey ACCESSION builder
 }

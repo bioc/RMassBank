@@ -121,9 +121,9 @@ Different versions of the function get the data from different sources. Note tha
 }
 \section{Functions}{
 \itemize{
-\item \code{findMsMsHR.mass}: A submethod of find MsMsHR that retrieves basic spectrum data
-}}
+\item \code{findMsMsHR.mass()}: A submethod of find MsMsHR that retrieves basic spectrum data
 
+}}
 \note{
 \code{findMsMs.direct} is deactivated
 }

@@ -32,11 +32,11 @@ The advantage of doing this over adding it with \code{$} or \code{[,""]} is that
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{o = RmbSpectrum2,name = character,type = character}: Add a new column to the RmbSpectrum2 properties
+\item \code{addProperty(o = RmbSpectrum2, name = character, type = character)}: Add a new column to the RmbSpectrum2 properties
 
-\item \code{o = data.frame,name = character,type = character}: Add a new column to a data.frame
+\item \code{addProperty(o = data.frame, name = character, type = character)}: Add a new column to a data.frame
+
 }}
-
 \author{
 stravsmi
 }

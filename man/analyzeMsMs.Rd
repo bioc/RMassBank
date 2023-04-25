@@ -126,11 +126,11 @@ rule (refer to the documentation of \code{\link{filterPeakSatellites}} for detai
 }
 \section{Functions}{
 \itemize{
-\item \code{analyzeMsMs.formula}: Analyze the peaks using formula annotation
+\item \code{analyzeMsMs.formula()}: Analyze the peaks using formula annotation
 
-\item \code{analyzeMsMs.intensity}: Analyze the peaks going only by intensity values
+\item \code{analyzeMsMs.intensity()}: Analyze the peaks going only by intensity values
+
 }}
-
 \examples{
 
 	\dontrun{analyzed <- analyzeMsMs(spec, "pH", TRUE)}
