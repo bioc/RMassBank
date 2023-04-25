@@ -428,7 +428,7 @@ setAccessionBuilder <- function(accessionBuilder) {
 
 
 .accessionValidate <- function(accession) {
-  pattern <- "^MSBNK-[A-Z0-9_]{1,32}-[A-Z0-9_]{1,64}$"
+  pattern <- "^MSBNK-[A-Za-z0-9_]{1,32}-[A-Z0-9_]{1,64}$"
   grepl(pattern, accession)
 }
 
