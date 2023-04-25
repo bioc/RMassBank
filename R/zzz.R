@@ -1,4 +1,6 @@
-
+#' @importFrom utils URLencode capture.output data flush.console 
+#'   packageVersion read.csv read.csv2
+#'   setTxtProgressBar str txtProgressBar type.convert write.csv write.table
 #' @import digest
 # Auxiliary for getSplash.R so we can use the original file and don't have to change anything there
 

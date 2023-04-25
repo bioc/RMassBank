@@ -15,6 +15,7 @@ NULL
 #' 
 #' @author stravsmi
 #' @noRd 
+#' @importFrom utils capture.output
 .get.mol2formula <- function (molecule, charge = 0) 
 {
 	capture.output(f <- get.mol2formula(molecule, charge))

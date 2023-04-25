@@ -34,7 +34,7 @@ Encoding: UTF-8
 Imports:
     XML,rjson,S4Vectors,digest,
     rcdk,yaml,mzR,methods,Biobase,MSnbase,httr,
-    enviPat,assertthat,logger,RCurl,readJDX,webchem,
+    enviPat,assertthat,logger,readJDX,webchem,
     ChemmineR,ChemmineOB,R.utils,data.table,glue
 Suggests:
     BiocStyle,gplots,RMassBankData (>= 1.33.1),
@@ -76,4 +76,4 @@ Collate:
     'zzz.R'
     'log_wrapper.R'
     'createCompoundlist.R'
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3

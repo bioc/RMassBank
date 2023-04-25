@@ -161,7 +161,7 @@ checkIsotopes <- function(w, mode = "pH", intensity_cutoff = 0, intensity_precis
 				if(plotSpectrum){
 					plot(currentMPeaks$mzFound, currentMPeaks$intensity,type="h", main=paste(id,findName(id)), col="black", xlab="m/z", ylab="intensity", lwd=3)
 					if(nrow(additionMatrix)){
-						points(additionMatrix$mzFound, additionMatrix$intensity,type="h", col="green", lwd=3)
+						graphics::points(additionMatrix$mzFound, additionMatrix$intensity,type="h", col="green", lwd=3)
 					}
 				}
                 # If there is something in the matrix
@@ -190,7 +190,7 @@ checkIsotopes <- function(w, mode = "pH", intensity_cutoff = 0, intensity_precis
             if(plotSpectrum){
                 plot(currentMPeaks$mzFound, currentMPeaks$intensity,type="h", main=paste(id,findName(id)), col="black", xlab="m/z", ylab="intensity", lwd=3)
                 if(nrow(correctionMatrix)){
-                    points(correctionMatrix$mzFound, correctionMatrix$intensity,type="h", col="green", lwd=3)
+                  graphics::points(correctionMatrix$mzFound, correctionMatrix$intensity,type="h", col="green", lwd=3)
                 }
             }
             return(0)
@@ -201,6 +201,7 @@ checkIsotopes <- function(w, mode = "pH", intensity_cutoff = 0, intensity_precis
 
 # Pattern finding and evaluation of these patterns inside the checkIsotopes function harmed readability and complicated debugging
 # So modularize this function
+#' @importFrom utils capture.output
 .findPattern <- function(aggregateRow, defIsotopes, intensity_cutoff, precisionVal, ppmlimit, isolationWindow){
 	
 	# Find pattern and mass

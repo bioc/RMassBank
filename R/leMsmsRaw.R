@@ -516,6 +516,7 @@ findMsMsHRperxcms <- function(fileName, cpdID, mode="pH", findPeaksArgs = NULL, 
 
 #' @describeIn findMsMsHRperxcms A submethod of findMsMsHrperxcms that retrieves basic spectrum data
 #' @export
+#' @importFrom utils capture.output
 findMsMsHRperxcms.direct <- function(fileName, cpdID, mode="pH", findPeaksArgs = NULL, plots = FALSE, MSe = FALSE) {
 	
 	requireNamespace("CAMERA",quietly=TRUE)

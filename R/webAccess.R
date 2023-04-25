@@ -1,4 +1,4 @@
-#' @import XML RCurl rjson httr
+#' @import XML rjson httr
 NULL
 ## library(XML)
 ## library(httr)
@@ -6,8 +6,7 @@ NULL
 
 
 retrieveDataWithRetry <- function(url, timeout, maximumNumberOfRetries = 5, retryDelayInSeconds = 3){
-  #data <- getURL(URLencode(url), timeout=8)
-  
+
   data <- NULL
   queryIsSuccessful <- FALSE
   numberOfRetries <- 0
@@ -146,29 +145,6 @@ getPcId <- function(query, from = "inchikey")
 		return(PcID)
 	}
 }
-
-# The following function is unfinished.
-# getPcRecord <- function(pcid)
-# {
-#   baseUrl <- "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
-#   term <- paste(baseUrl, "esummary.fcgi?db=pccompound&id=", URLencode(as.character(pcid)), 
-#                 
-#                 sep='')
-#   ret <- getURL(term)
-#   xml <- xmlParseDoc(ret,asText=TRUE)
-#   browser()
-# }
-
-
-# Note: some of the CHEBI codes returned are erroneous. (When the entry in 
-# CTS starts with "CHEBI:" instead of just the number, the XML output)
-# Also, there is no ChemSpider ID in the XML output, unfortunately.
-
-
-
-
-
-
 
 
 #' Retrieve information from CTS

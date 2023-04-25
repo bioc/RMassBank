@@ -1,5 +1,5 @@
-
-#library(xcms)
+#' @importFrom stats lm loess median predict smooth.spline
+NULL
 
 #' Backup \code{msmsWorkflow} results
 #' 
@@ -1502,7 +1502,7 @@ makeRecalibration <- function(w,
 		rc.ms1 <- rc
 	
 	# plot the model
-	par(mfrow=c(2,2))
+	graphics::par(mfrow=c(2,2))
 	if(nrow(rcdata)>0)
 		plotRecalibration.direct(rcdata = rcdata, rc = rc, rc.ms1 = rc.ms1, title = "MS2", 
 				mzrange = range(rcdata$mzFound),
@@ -1547,7 +1547,7 @@ plotRecalibration <- function(w, recalibrateBy = getOption("RMassBank")$recalibr
 	
 	
 	
-	par(mfrow=c(2,2))
+	graphics::par(mfrow=c(2,2))
 	if(nrow(rcdata)>0)
 		plotRecalibration.direct(rcdata, w@rc, w@rc.ms1, "MS2", 
 				range(spec$mzFound[which(spec$good)]),recalibrateBy)
@@ -1572,8 +1572,8 @@ plotRecalibration.direct <- function(rcdata, rc, rc.ms1, title, mzrange,
 	RcModelMz <- seq(mzrange[[1]], mzrange[[2]], by=0.2)
 	RcModelRecal <- predict(rc, newdata= data.frame(mzFound =RcModelMz))
 	RcModelRecalMs1 <- predict(rc.ms1, newdata= data.frame(mzFound =RcModelMz))
-	lines(RcModelMz, RcModelRecal, col="blue")
-	lines(RcModelMz, RcModelRecalMs1, col="yellow")
+	graphics::lines(RcModelMz, RcModelRecal, col="blue")
+	graphics::lines(RcModelMz, RcModelRecalMs1, col="yellow")
 	if((length(unique(rcdata$mzFound))>1) & 
 			(length(unique(rcdata$recalfield))>1))
 	{
@@ -1581,10 +1581,10 @@ plotRecalibration.direct <- function(rcdata, rc, rc.ms1, title, mzrange,
 		{
 			
 			gplots::hist2d(rcdata$mzFound, rcdata$recalfield, 
-					col=c("white", heat.colors(12)), xlab="m/z", 
+					col=c("white", grDevices::heat.colors(12)), xlab="m/z", 
 					ylab = ylab.plot, main=paste(title, "density"))
-			lines(RcModelMz, RcModelRecal, col="blue")
-			lines(RcModelMz, RcModelRecalMs1, col="yellow")
+		  graphics::lines(RcModelMz, RcModelRecal, col="blue")
+		  graphics::lines(RcModelMz, RcModelRecalMs1, col="yellow")
 		}
 		else
 		{
