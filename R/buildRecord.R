@@ -511,6 +511,7 @@ setAccessionBuilder <- function(accessionBuilder) {
 	  "to 'standard' or 'simple' to use a different accessionBuilder.", 
 	  "For detailed explanations of accessionBuilders, check out the",
 	  "'Settings' section of the RMassBank vignette."))
+	accessionBuilder <- NULL
 	source(userSettings$accessionBuilderFile)
 	#The file must contain a function called 'accessionBuilder'
 	#with arguments cpd, spectrum, subscan

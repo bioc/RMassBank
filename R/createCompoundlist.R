@@ -184,8 +184,8 @@ compoundlist2SDF <- function(filename) {
 	}
 	SDFset <- SDFset[valid]
 	SMILES <- SMILES[valid]
-	IDs <- compoundlist[valid, ID]
-	CAS <- compoundlist[valid, CAS]
+	IDs <- compoundlist[valid, "ID"]
+	CAS <- compoundlist[valid, "CAS"]
 	SDFset@SDF <- lapply(seq_along(SDFset), function(idx) {
 		single_SDF <- SDFset[[idx]]
 		metadata <- c(IDs[idx], SMILES[idx], CAS[idx])

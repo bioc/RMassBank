@@ -259,6 +259,9 @@ mbWorkflow <- function(mb, steps=c(1,2,3,4,5,6,7,8), infolist_path="./infolist.c
 	  mb@compiled <- lapply(
 			  selectSpectra(mb@spectra, "found", "object"),
 			  function(r) {
+			    # guard against NSE warnings from "filter"
+			    filterOK <- NULL
+			    best <- NULL
 				  rmb_log_info(paste("Compiling: ", r@name, sep=""))
 				  mbdata <- mb@mbdata_relisted[[which(mb@mbdata_archive$id == as.numeric(r@id))]]
 				  if(filter)
@@ -1876,10 +1879,8 @@ gatherDataMinimal.cpd <- function(cpd){
 
 gatherDataMinimal.spectrum <- function(spectrum){
   
-  ##Read from Compoundlist
-  if(length(cpd@smiles) == 1) smiles <- cpd@smiles
-  else
-    smiles <- ""
+  
+  smiles <- ""
   
   ##Create 
   mbdata <- list()

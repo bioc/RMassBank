@@ -53,11 +53,7 @@ checkIsotopes <- function(w, mode = "pH", intensity_cutoff = 0, intensity_precis
 	# Load filtersettings
 	filterSettings = settings$filterSettings
 	
-	# get the adduct additions
-	adductProperties <- getAdductProperties(mode, msmsPeaks@formula)
-	allowed_additions <- adductProperties$addition
-	mode.charge <- adductProperties$charge
-	
+
 	# "default" isotopes (i.e. those with the highest abundance)
 	defIsotopes <- c("107Ag", "27Al", "40Ar", "75As", "197Au", "11B", "138Ba", "9Be", "209Bi",
 	"79Br", "12C", "40Ca", "114Cd", "140Ce", "35Cl", "59Co", "52Cr", "133Cs", "63Cu", "164Dy",
@@ -85,6 +81,10 @@ checkIsotopes <- function(w, mode = "pH", intensity_cutoff = 0, intensity_precis
 	
 	# lapply over all runs
 	lapply(w@spectra, function(spec){
+	  
+	  # get the adduct additions
+	  adductProperties <- getAdductProperties(mode, spec@formula)
+	  allowed_additions <- adductProperties$addition
 		
 		# Find parent formula and cpdID
 		parent_formula <- add.formula(spec@formula, allowed_additions)
