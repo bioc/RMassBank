@@ -29,18 +29,6 @@ NULL # This is required so that roxygen knows where the first manpage starts
 #' 
 #' @note \code{findMsMs.direct} is deactivated
 #' 
-## # @usage findMsMsHR(fileName, cpdID, mode="pH",confirmMode =0, useRtLimit = TRUE,
-## # 		ppmFine = getOption("RMassBank")$findMsMsRawSettings$ppmFine,
-## # 		mzCoarse = getOption("RMassBank")$findMsMsRawSettings$mzCoarse,
-## # 		fillPrecursorScan = getOption("RMassBank")$findMsMsRawSettings$fillPrecursorScan,
-## # 		rtMargin = getOption("RMassBank")$rtMargin,
-## # 		deprofile = getOption("RMassBank")$deprofile,
-## # 		headerCache = NULL,
-## # 		peaksCache = NULL)
-## # 		
-## # findMsMsHR.mass(msRaw, mz, limit.coarse, limit.fine, rtLimits = NA, maxCount = NA,
-## # 		headerCache = NULL, fillPrecursorScan = FALSE,
-## # 		deprofile = getOption("RMassBank")$deprofile, peaksCache = NULL, cpdID = NA)
 #' 
 #' 
 #' @aliases findMsMsHR.mass findMsMsHR
@@ -85,6 +73,10 @@ NULL # This is required so that roxygen knows where the first manpage starts
 #' 			used (cf. \code{\link{deprofile}}) 
 #' @param diaWindows A data frame with columns \code{precursorMz}, \code{mzMin}, \code{mzMax} which specifies the precursor and 
 #'      window size of each window for DIA acquisition.
+#' @param enforcePolarity If TRUE, scans are filtered for the given `mode`'s polarity when
+#'      finding the target spectrum.
+#' @param polarity If set (for ?findMsMsHR.mass), scans are filtered for the given `mode`'s polarity when
+#'      finding the target spectrum.
 #' @return	An \code{RmbSpectraSet} (for \code{findMsMsHR}). Contains parent MS1 spectrum (\code{@@parent}), a block of dependent MS2 spectra ((\code{@@children})
 #' 			and some metadata (\code{id},\code{mz},\code{name},\code{mode} in which the spectrum was acquired.
 #' 
@@ -106,7 +98,9 @@ NULL # This is required so that roxygen knows where the first manpage starts
 #' @author Michael A. Stravs, Eawag <michael.stravs@@eawag.ch>
 #' @seealso findEIC
 #' @export
-findMsMsHR <- function(fileName = NULL, msRaw = NULL, cpdID, mode="pH",confirmMode =0, useRtLimit = TRUE,
+findMsMsHR <- function(
+    fileName = NULL, msRaw = NULL, cpdID, mode="pH", 
+    confirmMode = 0, useRtLimit = TRUE,
 		ppmFine = getOption("RMassBank")$findMsMsRawSettings$ppmFine,
 		mzCoarse = getOption("RMassBank")$findMsMsRawSettings$mzCoarse,
 		fillPrecursorScan = getOption("RMassBank")$findMsMsRawSettings$fillPrecursorScan,
@@ -969,6 +963,15 @@ read.msp <- function(file){
 #' 			freshly from \code{msRaw} for every compound.
 #' @param peaksCache If present, the complete output of \code{mzR::peaks(msRaw)}. This speeds up the lookup
 #' 			if multiple compounds should be searched in the same file.
+#' @param polarity If a value is given, scans are filtered to this polarity before EIC
+#'  extraction. Valid values are 1 for positive, 0 for negative (according to mzR), or a RMassBank
+#'  `mode` (e.g. `pH, pM, mH...`) from which the polarity can be derived.
+#' @param msLevel Which MS level to target for EIC extraction. By default this is 1; level 2
+#'  can be used to extract the EIC of fragments for a specific precursor or to extract EICs
+#'  from DIA data.
+#' @param precursor Which precursor to target for EIC extraction. If `NULL`, the scans are not 
+#'  filtered by precursor. Use this only for `msLevel != 1`. If a `precursor` filter is set for 
+#'  `msLevel == 1`, all scans will be filtered out.
 #' @param floatingRecalibration 
 #' 			A fitting function that \code{predict()}s a mass shift based on the retention time. Can be used
 #' 			if a lockmass calibration is known (however you have to build the calibration yourself.)

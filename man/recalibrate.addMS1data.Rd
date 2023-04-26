@@ -4,7 +4,7 @@
 \alias{recalibrate.addMS1data}
 \title{Return MS1 peaks to be used for recalibration}
 \usage{
-recalibrate.addMS1data(spec,mode="pH", recalibrateMS1Window = 
+recalibrate.addMS1data(spec, recalibrateMS1Window = 
 				getOption("RMassBank")$recalibrateMS1Window)
 }
 \arguments{

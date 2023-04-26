@@ -1488,12 +1488,25 @@ annotator.default <- function(annotation, formulaTag)
 #' @export
 setGeneric("toMassbank", function(o, ...) standardGeneric("toMassbank"))
 
+
+#' Convert spectra from a `RmbSpectraSet` object to MassBank records
+#' 
+#' @param addAnnotation `logical`, whether to add peak annotations (putative formulas) to the record.
+#' 
+#' @returns A list of character vectors with the MassBank records
+#' 
 #' @export
 setMethod("toMassbank", "RmbSpectraSet", function(o, addAnnotation = getOption("RMassBank")$add_annotation)
     {
       lapply(o@children, function(s) toMassbank(s, addAnnotation))
     })
 
+#' Convert a `RmbSpectrum2` object to a MassBank record
+#' 
+#' @param addAnnotation `logical`, whether to add peak annotations (putative formulas) to the record.
+#' 
+#' @returns A character vector with the MassBank record
+#' 
 #' @export
 setMethod("toMassbank", "RmbSpectrum2", function(o, addAnnotation = getOption("RMassBank")$add_annotation)
     {

@@ -57,6 +57,8 @@ archiveResults <- function(w, fileName, settings = getOption("RMassBank"))
 #'        used to extract peaks. MassBank will read existing records, 
 #'        so that e.g. a recalibration can be performed, and "peaklist" 
 #'        just requires a CSV with two columns and the column header "mz", "int".
+#' @param filetable If including step 1 (data extraction), a `filetable` argument
+#'        to be passed to \code{\link{msmsRead}}.
 #' @param findPeaksArgs A list of arguments that will be handed to the xcms-method findPeaks via do.call
 #' @param plots A parameter that determines whether the spectra should be plotted or not (This parameter is only used for the xcms-method)
 #' @param precursorscan.cf Whether to fill precursor scans. To be used with files which for
@@ -1292,7 +1294,7 @@ setMethod("cleanElnoise", c("RmbSpectraSet", noise="numeric", width="numeric"), 
 #' sp@@good <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
 #' sp@@precursorMz <- 600
 #' sp_checked <- problematicPeaks(sp)
-#' stopifnot(sum(getData(sp_checked)$problematicPeaks) == 2))
+#' stopifnot(sum(getData(sp_checked)$problematicPeaks) == 2)
 #' @export
 problematicPeaks <- function(sp)
 {
@@ -1330,7 +1332,6 @@ problematicPeaks <- function(sp)
 #' Generates a list of intense unmatched peaks for further review (the "failpeak list") and exports it if the archive name is given.
 #' 
 #' @param w \code{msmsWorkspace} to analyze. 
-#' @param mode Processing mode (pH etc)
 #' @param archivename Base name of the archive to write to (for "abc" the exported failpeaks list will be "abc_Failpeaks.csv").
 #' if the compoundlist is complete, "tentative", if at least a formula is present or "unknown"
 #' if the only know thing is the m/z
@@ -1764,6 +1765,7 @@ filterPeakSatellites <- function(peaks, filterSettings = getOption("RMassBank")$
 #' @param progressbar The progress bar callback to use. Only needed for specialized
 #'  applications.	Cf. the documentation of \code{\link{progressBarHook}} for usage.
 #' @param filterSettings Settings for filtering data. Refer to\code{\link{analyzeMsMs}} for settings.
+#' @param mode for `reanalyzeFailpeak`, the `mode` (adduct) of the analyzed spectrum.
 #' @return The aggregate data frame extended by the columns:
 #' #' \item{reanalyzed.???}{If reanalysis (step 7) has already been processed: matching values from the reanalyzed peaks}
 #' \item{matchedReanalysis}{Whether reanalysis has matched (\code{TRUE}), not matched(\code{FALSE}) or has not been conducted for the peak(\code{NA}).}
@@ -2150,7 +2152,7 @@ filterMultiplicity <- function(w, archivename=NA, mode="pH", recalcBest = TRUE,
 #' to the \code{spec$peaksMatched} table. However, only minimal information needed for
 #' recalibration is returned. 
 #' 
-#' @usage  recalibrate.addMS1data(spec,mode="pH", recalibrateMS1Window = 
+#' @usage  recalibrate.addMS1data(spec, recalibrateMS1Window = 
 #' 				getOption("RMassBank")$recalibrateMS1Window)
 #' @param spec A \code{msmsWorkspace} or \code{RmbSpectraSetList} containing spectra for which MS1 "peaks" should be "constructed". 
 #' @param recalibrateMS1Window Window width to look for MS1 peaks to recalibrate (in ppm).

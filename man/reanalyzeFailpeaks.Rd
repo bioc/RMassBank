@@ -30,6 +30,8 @@ indicator)}
 \item{pb}{A progressbar object to display progress on, as passed by
  \code{reanalyzeFailpeaks} to \code{reanalyzeFailpeak}. No progress 
 is displayed if NULL.}
+
+\item{mode}{for `reanalyzeFailpeak`, the `mode` (adduct) of the analyzed spectrum.}
 }
 \value{
 The aggregate data frame extended by the columns:

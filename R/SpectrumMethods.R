@@ -228,7 +228,11 @@ setMethod("normalize", c("RmbSpectrum2List"), function(object, ...)
 		})
 
 
-
+#' Add a mass shift to a spectrum
+#' 
+#' @param e1 a `MSnbase::Spectrum` object
+#' @param e2 a numeric mass shift
+#' 
 setMethod("+", c("Spectrum", "numeric"), function(e1, e2) 
 		{
 			e1@mz <- e1@mz + e2
@@ -236,13 +240,26 @@ setMethod("+", c("Spectrum", "numeric"), function(e1, e2)
 		}) 
 
 
-
+#' Add a negative mass shift to a spectrum
+#' 
+#' @param e1 a `MSnbase::Spectrum` object
+#' @param e2 a numeric mass shift
+#' 
 setMethod("-", c("Spectrum", "numeric"), function(e1, e2) 
 		{
 			e1@mz <- e1@mz - e2
 			return(e1)
 		}) 
 
+#' Add a mass shift to a list of spectra
+#' 
+#' Shifts both `parent` and `children` spectra of the `RmbSpectraSet` by the 
+#' same mass.
+#' 
+#' @param e1 a `RmbSpectraSet` object containing zero or more `children` spectra
+#'  and a `parent` spectrum
+#' @param e2 a numeric mass shift
+#' 
 setMethod("+", c("RmbSpectraSet", "ANY"), function(e1, e2)
 		{
 			e1@parent <- e1@parent + e2
@@ -251,6 +268,15 @@ setMethod("+", c("RmbSpectraSet", "ANY"), function(e1, e2)
 			e1
 		})
 
+#' Add a negative mass shift to a list of spectra
+#' 
+#' Shifts both `parent` and `children` spectra of the `RmbSpectraSet` by the 
+#' same mass.
+#' 
+#' @param e1 a `RmbSpectraSet` object containing zero or more `children` spectra
+#'  and a `parent` spectrum
+#' @param e2 a numeric mass shift
+#' 
 setMethod("-", c("RmbSpectraSet", "ANY"), function(e1, e2)
 		{
 			e1@parent <- e1@parent - e2
@@ -260,6 +286,13 @@ setMethod("-", c("RmbSpectraSet", "ANY"), function(e1, e2)
 		})
 
 
+#' Add a mass shift to a list of spectra
+#' 
+#' Shifts all spectra in a `RmbSpectrum2List` by the same mass
+#' 
+#' @param e1 a `RmbSpectrum2List` object containing zero or more `RmbSpectrum2` spectra
+#' @param e2 a numeric mass shift
+#' 
 setMethod("+", c("RmbSpectrum2List", "ANY"), function(e1, e2)
 		{
 			for(n in seq_len(length(e1)))
@@ -268,6 +301,13 @@ setMethod("+", c("RmbSpectrum2List", "ANY"), function(e1, e2)
 		})
 
 
+#' Add a negative mass shift to a list of spectra
+#' 
+#' Shifts all spectra in a `RmbSpectrum2List` by the same mass
+#' 
+#' @param e1 a `RmbSpectrum2List` object containing zero or more `RmbSpectrum2` spectra
+#' @param e2 a numeric mass shift
+#' 
 setMethod("-", c("RmbSpectrum2List", "ANY"), function(e1, e2)
 		{
 			for(n in seq_len(length(e1)))
