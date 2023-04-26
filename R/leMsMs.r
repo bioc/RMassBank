@@ -1298,7 +1298,7 @@ setMethod("cleanElnoise", c("RmbSpectraSet", noise="numeric", width="numeric"), 
 #' sp@@good <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
 #' sp@@precursorMz <- 600
 #' sp_checked <- problematicPeaks(sp)
-#' stopifnot(sum(getData(sp_checked)$problematicPeaks) == 2)
+#' stopifnot(sum(getData(sp_checked)$problematicPeak) == 2)
 #' @export
 problematicPeaks <- function(sp)
 {
