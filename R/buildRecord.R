@@ -91,57 +91,15 @@ setMethod("buildRecord", "RmbSpectraSet", function(o, ..., mbdata = list(), addi
 	return(ac)
 }
 
-# For each compound, this function creates the "lower part" of the MassBank record, i.e.
-# everything that comes after AC$INSTRUMENT_TYPE.
 
-#' Compose data block of MassBank record
+#' Get analytical info for MassBank record
 #' 
-#' \code{gatherCompound} composes the data blocks (the "lower half") of all
-#' MassBank records for a compound, using the annotation data in the RMassBank
-#' options, spectrum info data from the \code{analyzedSpec}-type record and the
-#' peaks from the reanalyzed, multiplicity-filtered peak table. It calls
-#' \code{gatherSpectrum} for each child spectrum.
+#' Collects the info for `ai, ac_lc, ac_ms` for general, LC and MS
+#'  info respectively. The info comes from the settings except for the
+#'  compound-specific part, which is omitted if there is no `cpd` specified.
 #' 
-#' The returned data blocks are in format \code{list( "AC\$MASS_SPECTROMETRY" =
-#' list('FRAGMENTATION_MODE' = 'CID', ...), ...)} etc.
-#' 
-#' @aliases gatherCompound gatherSpectrum
-#' @usage gatherCompound(spec, aggregated, additionalPeaks = NULL, retrieval="standard")
-#' 
-#' 		gatherSpectrum(spec, msmsdata, ac_ms, ac_lc, aggregated, 
-#'	 		additionalPeaks = NULL, retrieval="standard")
-#' @param spec A \code{RmbSpectraSet} object, representing a compound with multiple spectra.
-#' @param aggregated An aggregate peak table where the peaks are extracted from.
-#' @param msmsdata A \code{RmbSpectrum2} object from the \code{spec} spectra set, representing a single spectrum to give a record.
-#' @param ac_ms,ac_lc Information for the AC\$MASS_SPECTROMETRY and
-#' AC\$CHROMATOGRAPHY fields in the MassBank record, created by
-#' \code{gatherCompound} and then fed into \code{gatherSpectrum}.
-#' @param additionalPeaks If present, a table with additional peaks to add into the spectra.
-#' 		As loaded with \code{\link{addPeaks}}.
-#' @param retrieval A value that determines whether the files should be handled either as "standard",
-#' if the compoundlist is complete, "tentative", if at least a formula is present or "unknown"
-#' if the only know thing is the m/z
-#' @return \code{gatherCompound} returns a list of tree-like MassBank data
-#' blocks. \code{gatherSpectrum} returns one single MassBank data block or
-#' \code{NA} if no useful peak is in the spectrum. 
-#' @note Note that the global table \code{additionalPeaks} is also used as an
-#' additional source of peaks.
-#' @author Michael Stravs
-#' @seealso \code{\link{mbWorkflow}}, \code{\link{buildRecord}}
-#' @references MassBank record format:
-#' \url{http://www.massbank.jp/manuals/MassBankRecord_en.pdf}
-#' @examples \dontrun{
-#'      myspectrum <- w@@spectra[[1]]
-#' 		massbankdata <- gatherCompound(myspectrum, w@@aggregated)
-#' 		# Note: ac_lc and ac_ms are data blocks usually generated in gatherCompound and
-#' 		# passed on from there. The call below gives a relatively useless result :)
-#' 		ac_lc_dummy <- list()
-#' 		ac_ms_dummy <- list() 
-#' 		justOneSpectrum <- gatherSpectrum(myspectrum, myspectrum@@child[[2]],
-#' 			ac_ms_dummy, ac_lc_dummy, w@@aggregated)
-#' }
-#' 
-#' 
+#' @param cpd A `RmbSpectraSet` object
+#'
 #' @export
 getAnalyticalInfo <- function(cpd = NULL)
 {

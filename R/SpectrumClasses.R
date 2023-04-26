@@ -109,14 +109,34 @@ NULL
 		),
 )
 
+
+#' SimpleList specializations.
+#' 
+#' Typed lists using `SimpleList`.
+#' 
+#' @aliases RmbSpectrum2List RmbSpectraSetList
+#' 
 #' @exportClass RmbSpectrum2List
 .RmbSpectrum2List <- setClass("RmbSpectrum2List", contains="SimpleList",
 		prototype=prototype(elementType="RmbSpectrum2"))
-#
-#setAs("ANY", "RmbSpectrum2List", function(from) {
-#			coerceToSimpleList(from)
-#		})
 
+#' Set of spectra pertaining to one compound
+#' 
+#' @slot parent Spectrum1 The precursor spectrum
+#' @slot children RmbSpectrum2List List of `RmbSpectrum2` objects for the fragmentation
+#'  spectra, which are first extracted and later processed during `msmsWorkflow`
+#' @slot found logical, denotes whether or not fragmentation spectra were found for
+#'  this compound
+#' @slot complete logical, denotes whether or not *all* expected collision energies were
+#'  found for this compound
+#' @slot empty logical, `TRUE` if there are zero found spectra for this compound
+#' @slot formula character, the molecular formula of the neutral compound
+#' @slot id The ID of the compound in the RMassBank compound list (see \code{\link{loadList}})
+#' @slot mz the m/z value of the precursor 
+#' @slot name The name of the compound
+#' @slot mode The ion type of the precursor, e.g. `pH, mH, mNa`
+#' @slot smiles the SMILES string for the compound structure
+#' 
 #' @exportClass RmbSpectraSet
 .RmbSpectraSet <- setClass("RmbSpectraSet",
 		representation = representation(

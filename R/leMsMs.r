@@ -1232,11 +1232,13 @@ setGeneric("cleanElnoise",
 }
 
 #' @export
+#' @describeIn cleanElnoise Remove known electronic noise peaks
 setMethod("cleanElnoise", signature(peaks="data.frame", noise="numeric", width="numeric"),
 		function(peaks, noise, width) .cleanElnoise.df(peaks, noise, width))
 
 
 #' @export
+#' @describeIn cleanElnoise Remove known electronic noise peaks
 setMethod("cleanElnoise", signature(peaks="RmbSpectrum2", noise="numeric", width="numeric"),
 		function(peaks, noise, width) 
 		{
@@ -1250,7 +1252,7 @@ setMethod("cleanElnoise", signature(peaks="RmbSpectrum2", noise="numeric", width
 		})
 
 #' @export
-#' @describeIn selectPeaks A method to filter spectra to the specified peaks
+#' @describeIn cleanElnoise Remove known electronic noise peaks
 setMethod("cleanElnoise", c("RmbSpectrum2List",noise="numeric", width="numeric"), function(peaks, noise, width)
 		{
 			s <- lapply(peaks, function(s) cleanElnoise(s, noise, width))
@@ -1259,6 +1261,8 @@ setMethod("cleanElnoise", c("RmbSpectrum2List",noise="numeric", width="numeric")
 			return(peaks)
 		})
 
+#' @export
+#' @describeIn cleanElnoise Remove known electronic noise peaks
 setMethod("cleanElnoise", c("RmbSpectraSet", noise="numeric", width="numeric"), function(peaks, noise, width)
 		{
       if(length(peaks@children) == 0)
@@ -1749,11 +1753,11 @@ filterPeakSatellites <- function(peaks, filterSettings = getOption("RMassBank")$
 #' \code{specs} and sends every peak through \code{reanalyzeFailpeak}.
 #' 
 #' @aliases reanalyzeFailpeaks reanalyzeFailpeak
-#' @usage reanalyzeFailpeaks(aggregated, custom_additions, mode, filterSettings =
+#' @usage reanalyzeFailpeaks(w, custom_additions, filterSettings =
 #' 				getOption("RMassBank")$filterSettings, progressbar = "progressBarHook")
-#' reanalyzeFailpeak(custom_additions, mass, cpdID, counter, pb = NULL, mode,
+#' reanalyzeFailpeak(mass, custom_additions, cpdID, counter, pb = NULL, mode,
 #' 				filterSettings = getOption("RMassBank")$filterSettings)
-#' @param aggregated A peake aggregate table (\code{w@@aggregate}) (after processing electronic noise removal!)
+#' @param w A `msmsWorkspace` with annotated peaks.
 #' @param custom_additions The allowed additions, e.g. "N2O".
 #' @param mass (Usually recalibrated) m/z value of the peak.
 #' @param cpdID Compound ID of this spectrum.
@@ -1933,12 +1937,8 @@ reanalyzeFailpeak <- function(mass, custom_additions, cpdID, mode,
 #' at least twice if it is real, even if it is by chance a fragment which appears
 #' on only one collision energy setting. The function was not tested in a different
 #' setup. Therefore, use with a bit of caution.
-#' @usage filterPeaksMultiplicity(peaks, formulacol, recalcBest = TRUE)
-#' @param peaks An aggregate peak data.frame containing all peaks to be analyzed; with at least
-#' 			the columns \code{cpdID, scan, mzFound} and one column for the formula
-#' 			specified with the \code{formulacol} parameter. 
-#' @param formulacol Which column the assigned formula is stored in. (Needed to separately process \code{"formula"} and
-#' 			\code{"reanalyzed.formula"} multiplicites.)
+#' @usage filterPeaksMultiplicity(w, recalcBest = TRUE)
+#' @param w a `msmsWorkspace` object where formulas have been assigned to peaks
 #' @param recalcBest Whether the best formula for each peak should be re-determined.
 #' 			This is necessary for results from the ordinary \code{\link{analyzeMsMs}}
 #' 			analysis which allows multiple potential formulas per peak - the old best match

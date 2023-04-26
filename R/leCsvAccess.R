@@ -615,6 +615,9 @@ findMz.formula <- function(formula, mode="pH", ppm=10, deltaMz=0)
 #' if the only know thing is the m/z
 #' @param compact Only for \code{findLevel}, returns the "retrieval" parameter used for many functions 
 #' within RMassBank if TRUE
+#' @param unknownMass `charged` or `neutral` (`charged` assumed by default) specifies
+#'  whether a mass of an unknown compound (level 5) refers to the charged or neutral mass
+#'  (and correspondingly, whether it must be shifted or not to find the m/z value) 
 #' @return \code{findMz} will return a \code{list(mzCenter=, mzMin=, mzMax=)}
 #' with the molecular weight of the given ion, as calculated from the SMILES
 #' code and Rcdk.

@@ -116,6 +116,7 @@ setMethod("selectPeaks", c("RmbSpectraSetList"), function(o, ..., enclos = paren
 		})
 
 #' @export 
+#' @describeIn selectPeaks A method to filter spectra to the specified peaks
 setMethod("selectPeaks", c("RmbSpectraSet"), function(o, ..., enclos = parent.frame(2))
 		{
 			o@children <- selectPeaks(o@children, ..., enclos=enclos)

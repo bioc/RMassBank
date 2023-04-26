@@ -5,20 +5,20 @@
 \alias{reanalyzeFailpeak}
 \title{Reanalyze unmatched peaks}
 \usage{
-reanalyzeFailpeaks(aggregated, custom_additions, mode, filterSettings =
+reanalyzeFailpeaks(w, custom_additions, filterSettings =
 				getOption("RMassBank")$filterSettings, progressbar = "progressBarHook")
-reanalyzeFailpeak(custom_additions, mass, cpdID, counter, pb = NULL, mode,
+reanalyzeFailpeak(mass, custom_additions, cpdID, counter, pb = NULL, mode,
 				filterSettings = getOption("RMassBank")$filterSettings)
 }
 \arguments{
+\item{w}{A `msmsWorkspace` with annotated peaks.}
+
 \item{custom_additions}{The allowed additions, e.g. "N2O".}
 
 \item{filterSettings}{Settings for filtering data. Refer to\code{\link{analyzeMsMs}} for settings.}
 
 \item{progressbar}{The progress bar callback to use. Only needed for specialized
 applications.    Cf. the documentation of \code{\link{progressBarHook}} for usage.}
-
-\item{aggregated}{A peake aggregate table (\code{w@aggregate}) (after processing electronic noise removal!)}
 
 \item{mass}{(Usually recalibrated) m/z value of the peak.}
 

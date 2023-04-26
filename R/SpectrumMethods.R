@@ -172,6 +172,7 @@ setMethod("selectPeaks", c("RmbSpectrum2"), function(o, filter, ..., enclos=pare
 		})
 
 #' @export
+#' @describeIn selectPeaks A method to filter spectra to the specified peaks
 setMethod("selectPeaks", c("Spectrum"), function(o, filter, ..., enclos=parent.frame(2))
 		{
 			if(missing(filter))
@@ -195,6 +196,13 @@ setMethod("selectPeaks", c("RmbSpectrum2List"), function(o, ..., enclos=parent.f
 			return(o)
 		})
 
+#' Scale spectrum to specified intensity range
+#' 
+#' @param scale Maximum intensity in normalized spectrum
+#' @param precision Digits after comma for normalized intensity, typically 0
+#' @param slot Which property of the spectrum should be scaled
+#' @param ... arguments passed to `selectPeaks` to choose peaks for normalization
+#'
 #' @export 
 setMethod("normalize", c(object="RmbSpectrum2"), function(object, ..., scale=999, precision=0, slot="intensity")
 		{
@@ -218,6 +226,12 @@ setMethod("normalize", c(object="RmbSpectrum2"), function(object, ..., scale=999
 	return(intensity)
 }
 
+#' Normalize spectra
+#' 
+#' Scale all spectra in a `RmbSpectrum2List` to a specified intensity.
+#' 
+#' @param ... Arguments passed to `normalize,RmbSpectrum2`
+#' 
 #' @export
 setMethod("normalize", c("RmbSpectrum2List"), function(object, ...)
 		{
