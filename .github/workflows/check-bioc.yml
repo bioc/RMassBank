@@ -226,6 +226,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Run CMD check
+        if: "!contains(github.event.head_commit.message, '/nocheck')"
         env:
           _R_CHECK_CRAN_INCOMING_: false
         run: |
@@ -239,17 +240,17 @@ jobs:
 
       ## Might need an to add this to the if:  && runner.os == 'Linux'
       - name: Reveal testthat details
-        if:  env.has_testthat == 'true'
+        if:  "env.has_testthat == 'true' && !contains(github.event.head_commit.message, '/nocheck')"
         run: find . -name testthat.Rout -exec cat '{}' ';'
 
       - name: Run RUnit tests
-        if:  env.has_RUnit == 'true'
+        if:  "env.has_RUnit == 'true' && !contains(github.event.head_commit.message, '/nocheck')"
         run: |
           BiocGenerics:::testPackage()
         shell: Rscript {0}
 
       - name: Run BiocCheck
-        if:  env.has_BiocCheck == 'true'
+        if:  "env.has_BiocCheck == 'true' && !contains(github.event.head_commit.message, '/nocheck')"
         run: |
           BiocCheck::BiocCheck(
               dir('check', 'tar.gz$', full.names = TRUE),
