@@ -4,10 +4,11 @@
 \alias{toMassbank}
 \title{Write MassBank record into character array}
 \usage{
-toMassbank(mbdata)
+toMassbank(o)
 }
 \arguments{
-\item{mbdata}{A MassBank record in list format.}
+\item{o}{An object to convert to MassBank record format. This may be
+a single `RmbSpectrum2`, or a complete compound (an `RmbSpectraSet`),}
 }
 \value{
 The result is a text array, which is ready to be written to the disk

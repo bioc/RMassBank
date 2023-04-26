@@ -1464,8 +1464,10 @@ annotator.default <- function(annotation, formulaTag)
 #' headers for the first line, all data rows are printed space-separated. 
 #' }
 #' 
-#' @usage toMassbank(mbdata)
-#' @param mbdata A MassBank record in list format.
+#' @usage toMassbank(o)
+#' @param o An object to convert to MassBank record format. This may be
+#'  a single `RmbSpectrum2`, or a complete compound (an `RmbSpectraSet`),
+#'  
 #' @return The result is a text array, which is ready to be written to the disk
 #' as a file.
 #' @note The function iterates over the list item names. \bold{This means that
