@@ -224,6 +224,13 @@ jobs:
           pkgs <- installed.packages()[, "Package"]
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
+        
+      - name: Save cache (Linux)
+        uses: actions/cache/save@v2
+        if: "!contains(github.event.head_commit.message, '/nocache') && runner.os == 'Linux' "
+        with:
+          path: /home/runner/work/_temp/Library
+          key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-devel-${{ hashFiles('.github/depends.Rds') }}
 
       - name: Run CMD check
         if: "!contains(github.event.head_commit.message, '/nocheck')"
