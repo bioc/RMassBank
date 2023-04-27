@@ -1,4 +1,4 @@
-#' @import MSnbase
+#' @rawNamespace import(MSnbase, except="header")
 #' @importFrom Biobase classVersion
 #' @import S4Vectors
 NULL

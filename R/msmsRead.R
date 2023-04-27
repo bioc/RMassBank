@@ -1,4 +1,4 @@
-#' @import R.utils
+#' @rawNamespace import(R.utils, except="header")
 NULL
 
 #' 
