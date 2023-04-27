@@ -33,16 +33,11 @@ selectPeaks(o, ...)
 
 \item{...}{no additional parameters}
 
-\item{good}{if \code{TRUE}, include good (matched within filter criteria) peaks.}
+\item{filter}{The expression (to be evaluated in context of the `getData()`
+result on the spectrum) to define the peaks to keep. For example, `good & filterOK`}
 
-\item{bad}{if \code{TRUE}, include bad (not matched within filter criteria) peaks. Note: \code{good} and \code{bad} can be
-combined, both are returned in that case.}
-
-\item{cleaned}{if \code{TRUE}, return only peaks which passed the noise filter. Note: If the noise filter was not applied, the
-parameter has no effect. Also, a \code{noise} column is in any case added to the output, even if not present before.}
-
-\item{best}{if \code{TRUE}, only select the best match for each peak (i.e. the formula with smallest delta ppm). Otherwise multiple
-matches can be returned.}
+\item{enclos}{The context in which to evaluate the filter expression, by default set
+such that the spectrum `getData()` is retrieved.}
 }
 \value{
 Peak dataframe according to the specified criteria.
@@ -52,12 +47,6 @@ Selects peaks from aggregate table according to different criteria.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{selectPeaks(RmbSpectrum2)}: A method to filter spectra to the specified peaks
-
-\item \code{selectPeaks(Spectrum)}: A method to filter spectra to the specified peaks
-
-\item \code{selectPeaks(RmbSpectrum2List)}: A method to filter spectra to the specified peaks
-
 \item \code{selectPeaks(RmbSpectraSetList)}: A method to filter spectra to the specified peaks
 
 \item \code{selectPeaks(RmbSpectraSet)}: A method to filter spectra to the specified peaks

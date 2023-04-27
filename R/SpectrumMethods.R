@@ -159,7 +159,7 @@ setMethod("initialize", "RmbSpectrum2", function(.Object, ...,
 
 
 #' @export
-#' @describeIn selectPeaks A method to filter spectra to the specified peaks
+#' @rdname selectPeaks
 setMethod("selectPeaks", c("RmbSpectrum2"), function(o, filter, ..., enclos=parent.frame(2))
 		{
 			if(missing(filter))
@@ -172,7 +172,7 @@ setMethod("selectPeaks", c("RmbSpectrum2"), function(o, filter, ..., enclos=pare
 		})
 
 #' @export
-#' @describeIn selectPeaks A method to filter spectra to the specified peaks
+#' @rdname selectPeaks
 setMethod("selectPeaks", c("Spectrum"), function(o, filter, ..., enclos=parent.frame(2))
 		{
 			if(missing(filter))
@@ -188,7 +188,7 @@ setMethod("selectPeaks", c("Spectrum"), function(o, filter, ..., enclos=parent.f
 
 
 #' @export
-#' @describeIn selectPeaks A method to filter spectra to the specified peaks
+#' @rdname selectPeaks
 setMethod("selectPeaks", c("RmbSpectrum2List"), function(o, ..., enclos=parent.frame(2))
 		{
 			for(n in seq_len(length(o)))
@@ -198,6 +198,7 @@ setMethod("selectPeaks", c("RmbSpectrum2List"), function(o, ..., enclos=parent.f
 
 #' Scale spectrum to specified intensity range
 #' 
+#' @param object the `RmbSpectrum2` object to scale
 #' @param scale Maximum intensity in normalized spectrum
 #' @param precision Digits after comma for normalized intensity, typically 0
 #' @param slot Which property of the spectrum should be scaled
@@ -230,6 +231,7 @@ setMethod("normalize", c(object="RmbSpectrum2"), function(object, ..., scale=999
 #' 
 #' Scale all spectra in a `RmbSpectrum2List` to a specified intensity.
 #' 
+#' @param object the `RmbSpectrum2List` with spectra to scale
 #' @param ... Arguments passed to `normalize,RmbSpectrum2`
 #' 
 #' @export
@@ -329,7 +331,7 @@ setMethod("-", c("RmbSpectrum2List", "ANY"), function(e1, e2)
 			e1
 		})
 
-#' @describeIn addProperty Add a new column to the RmbSpectrum2 properties
+#' @rdname addProperty
 #'
 #' @export 
 setMethod("addProperty", c("RmbSpectrum2", "character", "character", "ANY"), function(o, name, type, value=NA)

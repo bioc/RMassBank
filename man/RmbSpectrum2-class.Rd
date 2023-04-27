@@ -20,7 +20,7 @@ If \code{TRUE}, the corresponding peak was removed as satellite.}
 If \code{TRUE}, the corresponding peak was removed
 because it failed the intensity cutoff.}
 
-\item{\code{rawOk}}{logical
+\item{\code{rawOK}}{logical
 If \code{TRUE}, the peak passed satellite and low-intensity cutoff removal.}
 
 \item{\code{good}}{logical

@@ -60,7 +60,7 @@ MassBank record format:
 }
 \seealso{
 \code{\link{mbWorkflow}}, \code{\link{addPeaks}},
-\code{\link{gatherCompound}}, \code{\link{toMassbank}}
+\code{\link{toMassbank}}
 }
 \author{
 Michael Stravs

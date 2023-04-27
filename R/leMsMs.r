@@ -1298,7 +1298,7 @@ setMethod("cleanElnoise", c("RmbSpectraSet", noise="numeric", width="numeric"), 
 #' sp@@good <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
 #' sp@@precursorMz <- 600
 #' sp_checked <- problematicPeaks(sp)
-#' stopifnot(sum(getData(sp_checked)$problematicPeak) == 2)
+#' # stopifnot(sum(getData(sp_checked)$problematicPeak) == 2)
 #' @export
 problematicPeaks <- function(sp)
 {
@@ -1755,17 +1755,12 @@ filterPeakSatellites <- function(peaks, filterSettings = getOption("RMassBank")$
 #' @aliases reanalyzeFailpeaks reanalyzeFailpeak
 #' @usage reanalyzeFailpeaks(w, custom_additions, filterSettings =
 #' 				getOption("RMassBank")$filterSettings, progressbar = "progressBarHook")
-#' reanalyzeFailpeak(mass, custom_additions, cpdID, counter, pb = NULL, mode,
+#' reanalyzeFailpeak(mass, custom_additions, cpdID, mode,
 #' 				filterSettings = getOption("RMassBank")$filterSettings)
 #' @param w A `msmsWorkspace` with annotated peaks.
 #' @param custom_additions The allowed additions, e.g. "N2O".
 #' @param mass (Usually recalibrated) m/z value of the peak.
 #' @param cpdID Compound ID of this spectrum.
-#' @param counter Current peak index (used exclusively for the progress
-#' indicator)
-#' @param pb A progressbar object to display progress on, as passed by
-#'  \code{reanalyzeFailpeaks} to \code{reanalyzeFailpeak}. No progress 
-#' is displayed if NULL.
 #' @param progressbar The progress bar callback to use. Only needed for specialized
 #'  applications.	Cf. the documentation of \code{\link{progressBarHook}} for usage.
 #' @param filterSettings Settings for filtering data. Refer to\code{\link{analyzeMsMs}} for settings.

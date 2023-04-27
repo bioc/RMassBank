@@ -7,7 +7,7 @@
 \usage{
 reanalyzeFailpeaks(w, custom_additions, filterSettings =
 				getOption("RMassBank")$filterSettings, progressbar = "progressBarHook")
-reanalyzeFailpeak(mass, custom_additions, cpdID, counter, pb = NULL, mode,
+reanalyzeFailpeak(mass, custom_additions, cpdID, mode,
 				filterSettings = getOption("RMassBank")$filterSettings)
 }
 \arguments{
@@ -23,13 +23,6 @@ applications.    Cf. the documentation of \code{\link{progressBarHook}} for usag
 \item{mass}{(Usually recalibrated) m/z value of the peak.}
 
 \item{cpdID}{Compound ID of this spectrum.}
-
-\item{counter}{Current peak index (used exclusively for the progress
-indicator)}
-
-\item{pb}{A progressbar object to display progress on, as passed by
- \code{reanalyzeFailpeaks} to \code{reanalyzeFailpeak}. No progress 
-is displayed if NULL.}
 
 \item{mode}{for `reanalyzeFailpeak`, the `mode` (adduct) of the analyzed spectrum.}
 }

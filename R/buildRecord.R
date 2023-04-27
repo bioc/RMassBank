@@ -38,7 +38,7 @@
 #' @return An object of the same type as was used for the input with new information added to it
 #' @author Michael Stravs
 #' @seealso \code{\link{mbWorkflow}}, \code{\link{addPeaks}},
-#' \code{\link{gatherCompound}}, \code{\link{toMassbank}}
+#' \code{\link{toMassbank}}
 #' @references MassBank record format:
 #' \url{http://www.massbank.jp/manuals/MassBankRecord_en.pdf}
 #' @rdname buildRecord

@@ -585,7 +585,8 @@ findMz.formula <- function(formula, mode="pH", ppm=10, deltaMz=0)
 #' it from the SMILES code in the list.
 #' 
 #' @aliases findMz findSmiles findFormula findRt findCAS findName findLevel
-#' @usage  findMz(cpdID, mode = "pH", ppm = 10, deltaMz = 0, retrieval="standard")
+#' @usage  findMz(cpdID, mode = "pH", ppm = 10, deltaMz = 0, retrieval="standard",
+#' unknownMass = getOption("RMassBank")$unknownMass )
 #' 
 #' findRt(cpdID) 
 #' 

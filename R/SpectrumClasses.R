@@ -9,12 +9,13 @@ NULL
 #' package and introduces further slots that are used to store information
 #' during the \code{RMassBank} workflow.
 #'
+
 #' @slot satellite logical
 #' If \code{TRUE}, the corresponding peak was removed as satellite.
 #' @slot low logical
 #' If \code{TRUE}, the corresponding peak was removed
 #' because it failed the intensity cutoff.
-#' @slot rawOk logical
+#' @slot rawOK logical
 #' If \code{TRUE}, the peak passed satellite and low-intensity cutoff removal.
 #' @slot good logical
 #' If \code{TRUE}, a formula could be found for the peak
@@ -68,6 +69,11 @@ NULL
 #' \code{noise}, \code{formulaMultiplicity}, \code{bestMultiplicity}
 #' and \code{filterOK}. However, new columns may be added on demand
 #' (see \code{\link{property<-}})
+#' 
+
+
+#' 
+#' 
 #' @seealso \code{\link[rcdk]{generate.formula}}, \code{\link{property<-}}
 #' \code{\link{analyzeMsMs}}, \code{\link{generate.formula}},
 #' \code{\link{is.valid.formula}}
@@ -110,13 +116,14 @@ NULL
 )
 
 
-#' SimpleList specializations.
+#' @title SimpleList specializations
 #' 
-#' Typed lists using `SimpleList`.
+#' @description Typed lists using SimpleList
 #' 
-#' @aliases RmbSpectrum2List RmbSpectraSetList
+#' @aliases RmbSpectraSetList
 #' 
 #' @exportClass RmbSpectrum2List
+#' @rdname RmbSpectrum2List
 .RmbSpectrum2List <- setClass("RmbSpectrum2List", contains="SimpleList",
 		prototype=prototype(elementType="RmbSpectrum2"))
 
@@ -175,6 +182,7 @@ NULL
 );
 
 #' @exportClass RmbSpectraSetList
+#' @rdname RmbSpectrum2List
 .RmbSpectraSetList <- setClass("RmbSpectraSetList", contains="SimpleList",
 		prototype=prototype(elementType="RmbSpectraSet"))
 

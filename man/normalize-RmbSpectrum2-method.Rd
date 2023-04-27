@@ -7,6 +7,8 @@
 \S4method{normalize}{RmbSpectrum2}(object, ..., scale = 999, precision = 0, slot = "intensity")
 }
 \arguments{
+\item{object}{the `RmbSpectrum2` object to scale}
+
 \item{...}{arguments passed to `selectPeaks` to choose peaks for normalization}
 
 \item{scale}{Maximum intensity in normalized spectrum}

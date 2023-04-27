@@ -4,9 +4,10 @@
 \name{RmbSpectrum2List-class}
 \alias{RmbSpectrum2List-class}
 \alias{.RmbSpectrum2List}
-\alias{RmbSpectrum2List}
 \alias{RmbSpectraSetList}
-\title{SimpleList specializations.}
+\alias{RmbSpectraSetList-class}
+\alias{.RmbSpectraSetList}
+\title{SimpleList specializations}
 \description{
-Typed lists using `SimpleList`.
+Typed lists using SimpleList
 }

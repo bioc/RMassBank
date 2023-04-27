@@ -7,6 +7,8 @@
 \S4method{normalize}{RmbSpectrum2List}(object, ...)
 }
 \arguments{
+\item{object}{the `RmbSpectrum2List` with spectra to scale}
+
 \item{...}{Arguments passed to `normalize,RmbSpectrum2`}
 }
 \description{

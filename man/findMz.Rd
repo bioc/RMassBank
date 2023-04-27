@@ -10,7 +10,8 @@
 \alias{findLevel}
 \title{Find compound information}
 \usage{
-findMz(cpdID, mode = "pH", ppm = 10, deltaMz = 0, retrieval="standard")
+findMz(cpdID, mode = "pH", ppm = 10, deltaMz = 0, retrieval="standard",
+unknownMass = getOption("RMassBank")$unknownMass )
 
 findRt(cpdID) 
 
