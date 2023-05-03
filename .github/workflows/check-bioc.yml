@@ -100,7 +100,7 @@ jobs:
 
       - name: Cache R packages
         if: "!contains(github.event.head_commit.message, '/nocache') && runner.os != 'Linux'"
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-devel-${{ hashFiles('.github/depends.Rds') }}
@@ -108,7 +108,7 @@ jobs:
 
       - name: Cache R packages on Linux
         if: "!contains(github.event.head_commit.message, '/nocache') && runner.os == 'Linux' "
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /home/runner/work/_temp/Library
           key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-devel-${{ hashFiles('.github/depends.Rds') }}
@@ -224,8 +224,16 @@ jobs:
           pkgs <- installed.packages()[, "Package"]
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
+        
+      - name: Save cache (Linux)
+        uses: actions/cache/save@v3
+        if: "!contains(github.event.head_commit.message, '/nocache') && runner.os == 'Linux' "
+        with:
+          path: /home/runner/work/_temp/Library
+          key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-devel-${{ hashFiles('.github/depends.Rds') }}
 
       - name: Run CMD check
+        if: "!contains(github.event.head_commit.message, '/nocheck')"
         env:
           _R_CHECK_CRAN_INCOMING_: false
         run: |
@@ -239,17 +247,17 @@ jobs:
 
       ## Might need an to add this to the if:  && runner.os == 'Linux'
       - name: Reveal testthat details
-        if:  env.has_testthat == 'true'
+        if:  "env.has_testthat == 'true' && !contains(github.event.head_commit.message, '/nocheck')"
         run: find . -name testthat.Rout -exec cat '{}' ';'
 
       - name: Run RUnit tests
-        if:  env.has_RUnit == 'true'
+        if:  "env.has_RUnit == 'true' && !contains(github.event.head_commit.message, '/nocheck')"
         run: |
           BiocGenerics:::testPackage()
         shell: Rscript {0}
 
       - name: Run BiocCheck
-        if:  env.has_BiocCheck == 'true'
+        if:  "env.has_BiocCheck == 'true' && !contains(github.event.head_commit.message, '/nocheck')"
         run: |
           BiocCheck::BiocCheck(
               dir('check', 'tar.gz$', full.names = TRUE),

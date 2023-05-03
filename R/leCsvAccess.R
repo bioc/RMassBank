@@ -1,3 +1,5 @@
+#' @import digest
+
 
 .listEnvEnv <- new.env()
 assign("listEnv", NULL, envir=.listEnvEnv)
@@ -58,7 +60,7 @@ loadList <- function(path, listEnv = NULL, check = TRUE)
     
     # Do all Compoundlist IDs have 4 characters or less?
     if(any(nchar(compoundList$ID) > 4)){
-        stop("The maximum number of digits for compound IDs is 4")
+        warning("Some compound IDs are >4 digits. If using legacy ACCESSION, this will lead to information loss in the records!")
     }
     
     # Evaluate if all strictly necessary columns are in the list
@@ -369,6 +371,10 @@ getIonMode <- function(mode) {
   ifelse(charge > 0, "POSITIVE", "NEGATIVE")
 }
 
+# adduct hash size. For unit testing purposes we specify this outside,
+# so we can test collision behaviour when we set it to length 2
+.adductHashSize <- 4
+
 getAdductInformation <- function(formula){
   adductDf <- as.data.frame(rbind(
     
@@ -500,13 +506,20 @@ getAdductInformation <- function(formula){
     c(mode = "",        addition = "",       charge = 0,  adductString = "[M]")
   ), stringsAsFactors = F)
   adductDf$charge <- as.integer(adductDf$charge)
-  
+  adductDf$hash <- apply(adductDf, 1, function(x) digest(glue_data(x, "{mode}$adductString"), serialize=FALSE))
   
   
   if(any(any(duplicated(adductDf$mode)), any(duplicated(adductDf$adductString)))) stop("Invalid adduct table")
+  duplicated_hash <- duplicated(substr(adductDf$hash, 1, .adductHashSize))
+  if(any(duplicated_hash)) stop(glue(
+    "DEVELOPER MESSAGE: Adducts {paste(adductDf$mode[duplicated_hash], collapse = ',')} have colliding hashes, please rename the `mode` to avoid collision!"))
+     
+  
   
   return(adductDf)
 }
+
+
 getAdductProperties <- function(mode, formula){
   if(grepl(x = mode, pattern = "pM") & is.null(formula))
     stop("Cannot calculate pM adduct without formula")
@@ -572,7 +585,8 @@ findMz.formula <- function(formula, mode="pH", ppm=10, deltaMz=0)
 #' it from the SMILES code in the list.
 #' 
 #' @aliases findMz findSmiles findFormula findRt findCAS findName findLevel
-#' @usage  findMz(cpdID, mode = "pH", ppm = 10, deltaMz = 0, retrieval="standard")
+#' @usage  findMz(cpdID, mode = "pH", ppm = 10, deltaMz = 0, retrieval="standard",
+#' unknownMass = getOption("RMassBank")$unknownMass )
 #' 
 #' findRt(cpdID) 
 #' 
@@ -602,6 +616,9 @@ findMz.formula <- function(formula, mode="pH", ppm=10, deltaMz=0)
 #' if the only know thing is the m/z
 #' @param compact Only for \code{findLevel}, returns the "retrieval" parameter used for many functions 
 #' within RMassBank if TRUE
+#' @param unknownMass `charged` or `neutral` (`charged` assumed by default) specifies
+#'  whether a mass of an unknown compound (level 5) refers to the charged or neutral mass
+#'  (and correspondingly, whether it must be shifted or not to find the m/z value) 
 #' @return \code{findMz} will return a \code{list(mzCenter=, mzMin=, mzMax=)}
 #' with the molecular weight of the given ion, as calculated from the SMILES
 #' code and Rcdk.

@@ -4,20 +4,15 @@
 \alias{problematicPeaks}
 \title{Identify intense peaks (in a list of unmatched peaks)}
 \usage{
-problematicPeaks(peaks_unmatched, peaks_matched, mode = "pH")
+problematicPeaks(sp)
 }
 \arguments{
-\item{peaks_unmatched}{Table of unmatched peaks, with at least \code{cpdID,
-scan, mzFound, int}.}
-
-\item{peaks_matched}{Table of matched peaks (used for base peak reference),
-with at least \code{cpdID, scan, int}.}
-
-\item{mode}{Processing mode (\code{"pH", "pNa"} etc.)}
+\item{sp}{a RmbSpectrum2 object to be checked for problematic peaks.}
 }
 \value{
-A filtered table with the potentially problematic peaks, including
-the precursor mass and MSMS base peak intensity (\code{aMax}) for reference.
+The modified RmbSpectrum2 object with additional columns/properties 
+ `problematicPeaks` (logical `TRUE` if the peak is intense and unannotated),
+ `aMax` (base peak intensity), `mzCenter` (the precursor m/z).
 }
 \description{
 Finds a list of peaks in spectra with a high relative intensity (>10% and
@@ -25,13 +20,20 @@ Finds a list of peaks in spectra with a high relative intensity (>10% and
 checked.  Peaks orbiting around the parent peak mass (calculated from the
 compound ID), which are very likely co-isolated substances, are ignored.
 }
-\examples{
-\dontrun{
-# As used in the workflow: 
-fp <- problematicPeaks(specs[!specs$filterOK & !specs$noise & 
-						((specs$dppm == specs$dppmBest) | (is.na(specs$dppmBest)))
-				,,drop=FALSE], peaksMatched(w), mode)
+\note{
+TODO: there is hardcoded logic in this function that needs to be
+ resolved eventually!
 }
+\examples{
+# As used in the workflow: 
+
+sp <- new("RmbSpectrum2", mz = c(100,200,300,400,500), intensity = c(999999,888888,777777,666666,555555))
+sp@ok <- TRUE
+property(sp, "mzFound", addNew=TRUE) <- sp@mz
+sp@good <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+sp@precursorMz <- 600
+sp_checked <- problematicPeaks(sp)
+# stopifnot(sum(getData(sp_checked)$problematicPeak) == 2)
 }
 \seealso{
 \code{\link{msmsWorkflow}}

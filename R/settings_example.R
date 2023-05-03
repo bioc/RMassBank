@@ -209,6 +209,7 @@ NULL
 	# Prefix for MassBank accession IDs
 	#
     entry_prefix = "XX",
+	  contributor_prefix = "CONTRIBUTOR",
     ms_type = "MS2",
     ionization = "ESI",
     ms_dataprocessing = list(
@@ -246,6 +247,10 @@ NULL
     "mFA" = 66, # [M+FA]-: 67-80
 	"mM" = 80 # [M]-: 81-94
     ),
+  accessionBuilderType = NULL,
+  accessionBuilder = "MSBNK-{contributor_prefix}-{entry_prefix}{compound_id(4)}{scan_id(2)}",
+  # Validate accession? Set to FALSE to bypass accession validation
+  accessionValidate = TRUE,
   # Known electronic noise peaks in the Orbitrap data
   electronicNoise = c(189.825, 201.725,196.875),
   # Exclusion width of electronic noise peaks (from unmatched peaks, prior to

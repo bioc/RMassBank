@@ -27,13 +27,13 @@ Counts the number of acquired spectra for a compound or multiple compounds
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{RmbSpectraSet}: Counts the number of acquired spectra for an RmbSpectraSet
+\item \code{spectraCount(RmbSpectraSet)}: Counts the number of acquired spectra for an RmbSpectraSet
 
-\item \code{RmbSpectraSetList}: Counts the number of acquired spectra for an RmbSpectraSetList
+\item \code{spectraCount(RmbSpectraSetList)}: Counts the number of acquired spectra for an RmbSpectraSetList
 
-\item \code{msmsWorkspace}: Counts the number of acquired spectra for an msmsWorkSpace
+\item \code{spectraCount(msmsWorkspace)}: Counts the number of acquired spectra for an msmsWorkSpace
+
 }}
-
 \author{
 stravsmi
 }

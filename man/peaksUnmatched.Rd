@@ -26,11 +26,11 @@ Select matching/unmatching peaks from aggregate table
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{data.frame}: A method to retrieve the unmatched peaks from the "aggregated" slot (a data.frame object) in an msmsWorkSpace
+\item \code{peaksUnmatched(data.frame)}: A method to retrieve the unmatched peaks from the "aggregated" slot (a data.frame object) in an msmsWorkSpace
 
-\item \code{msmsWorkspace}: A method to retrieve the unmatched peaks from an msmsWorkSpace
+\item \code{peaksUnmatched(msmsWorkspace)}: A method to retrieve the unmatched peaks from an msmsWorkSpace
+
 }}
-
 \author{
 stravsmi
 }

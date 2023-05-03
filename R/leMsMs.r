@@ -1,5 +1,5 @@
-
-#library(xcms)
+#' @importFrom stats lm loess median predict smooth.spline
+NULL
 
 #' Backup \code{msmsWorkflow} results
 #' 
@@ -57,6 +57,8 @@ archiveResults <- function(w, fileName, settings = getOption("RMassBank"))
 #'        used to extract peaks. MassBank will read existing records, 
 #'        so that e.g. a recalibration can be performed, and "peaklist" 
 #'        just requires a CSV with two columns and the column header "mz", "int".
+#' @param filetable If including step 1 (data extraction), a `filetable` argument
+#'        to be passed to \code{\link{msmsRead}}.
 #' @param findPeaksArgs A list of arguments that will be handed to the xcms-method findPeaks via do.call
 #' @param plots A parameter that determines whether the spectra should be plotted or not (This parameter is only used for the xcms-method)
 #' @param precursorscan.cf Whether to fill precursor scans. To be used with files which for
@@ -1230,11 +1232,13 @@ setGeneric("cleanElnoise",
 }
 
 #' @export
+#' @describeIn cleanElnoise Remove known electronic noise peaks
 setMethod("cleanElnoise", signature(peaks="data.frame", noise="numeric", width="numeric"),
 		function(peaks, noise, width) .cleanElnoise.df(peaks, noise, width))
 
 
 #' @export
+#' @describeIn cleanElnoise Remove known electronic noise peaks
 setMethod("cleanElnoise", signature(peaks="RmbSpectrum2", noise="numeric", width="numeric"),
 		function(peaks, noise, width) 
 		{
@@ -1248,7 +1252,7 @@ setMethod("cleanElnoise", signature(peaks="RmbSpectrum2", noise="numeric", width
 		})
 
 #' @export
-#' @describeIn selectPeaks A method to filter spectra to the specified peaks
+#' @describeIn cleanElnoise Remove known electronic noise peaks
 setMethod("cleanElnoise", c("RmbSpectrum2List",noise="numeric", width="numeric"), function(peaks, noise, width)
 		{
 			s <- lapply(peaks, function(s) cleanElnoise(s, noise, width))
@@ -1257,6 +1261,8 @@ setMethod("cleanElnoise", c("RmbSpectrum2List",noise="numeric", width="numeric")
 			return(peaks)
 		})
 
+#' @export
+#' @describeIn cleanElnoise Remove known electronic noise peaks
 setMethod("cleanElnoise", c("RmbSpectraSet", noise="numeric", width="numeric"), function(peaks, noise, width)
 		{
       if(length(peaks@children) == 0)
@@ -1273,22 +1279,26 @@ setMethod("cleanElnoise", c("RmbSpectraSet", noise="numeric", width="numeric"), 
 #' compound ID), which are very likely co-isolated substances, are ignored.
 #' 
 #' 
-#' @usage problematicPeaks(peaks_unmatched, peaks_matched, mode = "pH")
-#' @param peaks_unmatched Table of unmatched peaks, with at least \code{cpdID,
-#' scan, mzFound, int}.
-#' @param peaks_matched Table of matched peaks (used for base peak reference),
-#' with at least \code{cpdID, scan, int}.
-#' @param mode Processing mode (\code{"pH", "pNa"} etc.)
-#' @return A filtered table with the potentially problematic peaks, including
-#' the precursor mass and MSMS base peak intensity (\code{aMax}) for reference.
+#' @usage problematicPeaks(sp)
+#' @param sp a RmbSpectrum2 object to be checked for problematic peaks.
+#' 
+#' @note TODO: there is hardcoded logic in this function that needs to be
+#'  resolved eventually!
+#' @return The modified RmbSpectrum2 object with additional columns/properties 
+#'  `problematicPeaks` (logical `TRUE` if the peak is intense and unannotated),
+#'  `aMax` (base peak intensity), `mzCenter` (the precursor m/z).
 #' @author Michael Stravs
 #' @seealso \code{\link{msmsWorkflow}}
-#' @examples \dontrun{
+#' @examples 
 #' # As used in the workflow: 
-#' fp <- problematicPeaks(specs[!specs$filterOK & !specs$noise & 
-#' 						((specs$dppm == specs$dppmBest) | (is.na(specs$dppmBest)))
-#' 				,,drop=FALSE], peaksMatched(w), mode)
-#' }
+#' 
+#' sp <- new("RmbSpectrum2", mz = c(100,200,300,400,500), intensity = c(999999,888888,777777,666666,555555))
+#' sp@@ok <- TRUE
+#' property(sp, "mzFound", addNew=TRUE) <- sp@@mz
+#' sp@@good <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+#' sp@@precursorMz <- 600
+#' sp_checked <- problematicPeaks(sp)
+#' # stopifnot(sum(getData(sp_checked)$problematicPeak) == 2)
 #' @export
 problematicPeaks <- function(sp)
 {
@@ -1297,6 +1307,7 @@ problematicPeaks <- function(sp)
   sp <- addProperty(sp, "problematicPeak", "logical", FALSE)
   sp <- addProperty(sp, "aMax", "numeric", 0)
   sp <- addProperty(sp, "mzCenter", "numeric", sp@precursorMz)
+  
   peaks <- getData(sp)
   peaks$`_index` <- seq_len(nrow(peaks))
   peaks$aMax <- max(peaksMatched(peaks)$intensity)
@@ -1315,7 +1326,7 @@ problematicPeaks <- function(sp)
 		  (p_control$mzFound < p_control$mzCenter - 1) |
 		  (p_control$mzFound > p_control$mzCenter + 1),,drop=FALSE]
   if(nrow(p_control_noMH) > 0)
-    peaks[peaks$`_index` %in% p_control_noMH$`_index`]$problematicPeak <- TRUE
+    peaks[peaks$`_index` %in% p_control_noMH$`_index`,]$problematicPeak <- TRUE
   sp <- setData(sp, peaks)
   return(sp)
 }
@@ -1325,7 +1336,6 @@ problematicPeaks <- function(sp)
 #' Generates a list of intense unmatched peaks for further review (the "failpeak list") and exports it if the archive name is given.
 #' 
 #' @param w \code{msmsWorkspace} to analyze. 
-#' @param mode Processing mode (pH etc)
 #' @param archivename Base name of the archive to write to (for "abc" the exported failpeaks list will be "abc_Failpeaks.csv").
 #' if the compoundlist is complete, "tentative", if at least a formula is present or "unknown"
 #' if the only know thing is the m/z
@@ -1396,16 +1406,19 @@ processProblematicPeaks <- function(w, archivename = NA)
 #' (\code{msmsWorkflow(mode="pNa", steps=c(1:8), newRecalibration=FALSE)}).
 #' This also ensures a consistent recalibration across all spectra of the same batch. 
 #' 
-#' @usage makeRecalibration(w, mode, 
+#' @usage makeRecalibration(w,  
 #'  	recalibrateBy = getOption("RMassBank")$recalibrateBy,
 #' 		recalibrateMS1 = getOption("RMassBank")$recalibrateMS1,
 #' 		recalibrator = getOption("RMassBank")$recalibrator,
 #' 		recalibrateMS1Window = getOption("RMassBank")$recalibrateMS1Window 
 #' 		)
 #' 
-#'  recalibrateSpectra(mode, rawspec = NULL, rc = NULL, rc.ms1=NULL, w = NULL,
+#'  recalibrateSpectra(rawspec = NULL, rc = NULL, rc.ms1=NULL, w = NULL,
 #' 		recalibrateBy = getOption("RMassBank")$recalibrateBy,
 #' 		recalibrateMS1 = getOption("RMassBank")$recalibrateMS1)
+#' 
+#' 
+#' 
 #' 
 #'  recalibrateSingleSpec(spectrum, rc, 
 #' 		recalibrateBy = getOption("RMassBank")$recalibrateBy)
@@ -1494,7 +1507,7 @@ makeRecalibration <- function(w,
 		rc.ms1 <- rc
 	
 	# plot the model
-	par(mfrow=c(2,2))
+	graphics::par(mfrow=c(2,2))
 	if(nrow(rcdata)>0)
 		plotRecalibration.direct(rcdata = rcdata, rc = rc, rc.ms1 = rc.ms1, title = "MS2", 
 				mzrange = range(rcdata$mzFound),
@@ -1539,7 +1552,7 @@ plotRecalibration <- function(w, recalibrateBy = getOption("RMassBank")$recalibr
 	
 	
 	
-	par(mfrow=c(2,2))
+	graphics::par(mfrow=c(2,2))
 	if(nrow(rcdata)>0)
 		plotRecalibration.direct(rcdata, w@rc, w@rc.ms1, "MS2", 
 				range(spec$mzFound[which(spec$good)]),recalibrateBy)
@@ -1564,8 +1577,8 @@ plotRecalibration.direct <- function(rcdata, rc, rc.ms1, title, mzrange,
 	RcModelMz <- seq(mzrange[[1]], mzrange[[2]], by=0.2)
 	RcModelRecal <- predict(rc, newdata= data.frame(mzFound =RcModelMz))
 	RcModelRecalMs1 <- predict(rc.ms1, newdata= data.frame(mzFound =RcModelMz))
-	lines(RcModelMz, RcModelRecal, col="blue")
-	lines(RcModelMz, RcModelRecalMs1, col="yellow")
+	graphics::lines(RcModelMz, RcModelRecal, col="blue")
+	graphics::lines(RcModelMz, RcModelRecalMs1, col="yellow")
 	if((length(unique(rcdata$mzFound))>1) & 
 			(length(unique(rcdata$recalfield))>1))
 	{
@@ -1573,10 +1586,10 @@ plotRecalibration.direct <- function(rcdata, rc, rc.ms1, title, mzrange,
 		{
 			
 			gplots::hist2d(rcdata$mzFound, rcdata$recalfield, 
-					col=c("white", heat.colors(12)), xlab="m/z", 
+					col=c("white", grDevices::heat.colors(12)), xlab="m/z", 
 					ylab = ylab.plot, main=paste(title, "density"))
-			lines(RcModelMz, RcModelRecal, col="blue")
-			lines(RcModelMz, RcModelRecalMs1, col="yellow")
+		  graphics::lines(RcModelMz, RcModelRecal, col="blue")
+		  graphics::lines(RcModelMz, RcModelRecalMs1, col="yellow")
 		}
 		else
 		{
@@ -1740,22 +1753,18 @@ filterPeakSatellites <- function(peaks, filterSettings = getOption("RMassBank")$
 #' \code{specs} and sends every peak through \code{reanalyzeFailpeak}.
 #' 
 #' @aliases reanalyzeFailpeaks reanalyzeFailpeak
-#' @usage reanalyzeFailpeaks(aggregated, custom_additions, mode, filterSettings =
+#' @usage reanalyzeFailpeaks(w, custom_additions, filterSettings =
 #' 				getOption("RMassBank")$filterSettings, progressbar = "progressBarHook")
-#' reanalyzeFailpeak(custom_additions, mass, cpdID, counter, pb = NULL, mode,
+#' reanalyzeFailpeak(mass, custom_additions, cpdID, mode,
 #' 				filterSettings = getOption("RMassBank")$filterSettings)
-#' @param aggregated A peake aggregate table (\code{w@@aggregate}) (after processing electronic noise removal!)
+#' @param w A `msmsWorkspace` with annotated peaks.
 #' @param custom_additions The allowed additions, e.g. "N2O".
 #' @param mass (Usually recalibrated) m/z value of the peak.
 #' @param cpdID Compound ID of this spectrum.
-#' @param counter Current peak index (used exclusively for the progress
-#' indicator)
-#' @param pb A progressbar object to display progress on, as passed by
-#'  \code{reanalyzeFailpeaks} to \code{reanalyzeFailpeak}. No progress 
-#' is displayed if NULL.
 #' @param progressbar The progress bar callback to use. Only needed for specialized
 #'  applications.	Cf. the documentation of \code{\link{progressBarHook}} for usage.
 #' @param filterSettings Settings for filtering data. Refer to\code{\link{analyzeMsMs}} for settings.
+#' @param mode for `reanalyzeFailpeak`, the `mode` (adduct) of the analyzed spectrum.
 #' @return The aggregate data frame extended by the columns:
 #' #' \item{reanalyzed.???}{If reanalysis (step 7) has already been processed: matching values from the reanalyzed peaks}
 #' \item{matchedReanalysis}{Whether reanalysis has matched (\code{TRUE}), not matched(\code{FALSE}) or has not been conducted for the peak(\code{NA}).}
@@ -1923,12 +1932,8 @@ reanalyzeFailpeak <- function(mass, custom_additions, cpdID, mode,
 #' at least twice if it is real, even if it is by chance a fragment which appears
 #' on only one collision energy setting. The function was not tested in a different
 #' setup. Therefore, use with a bit of caution.
-#' @usage filterPeaksMultiplicity(peaks, formulacol, recalcBest = TRUE)
-#' @param peaks An aggregate peak data.frame containing all peaks to be analyzed; with at least
-#' 			the columns \code{cpdID, scan, mzFound} and one column for the formula
-#' 			specified with the \code{formulacol} parameter. 
-#' @param formulacol Which column the assigned formula is stored in. (Needed to separately process \code{"formula"} and
-#' 			\code{"reanalyzed.formula"} multiplicites.)
+#' @usage filterPeaksMultiplicity(w, recalcBest = TRUE)
+#' @param w a `msmsWorkspace` object where formulas have been assigned to peaks
 #' @param recalcBest Whether the best formula for each peak should be re-determined.
 #' 			This is necessary for results from the ordinary \code{\link{analyzeMsMs}}
 #' 			analysis which allows multiple potential formulas per peak - the old best match
@@ -2142,7 +2147,7 @@ filterMultiplicity <- function(w, archivename=NA, mode="pH", recalcBest = TRUE,
 #' to the \code{spec$peaksMatched} table. However, only minimal information needed for
 #' recalibration is returned. 
 #' 
-#' @usage  recalibrate.addMS1data(spec,mode="pH", recalibrateMS1Window = 
+#' @usage  recalibrate.addMS1data(spec, recalibrateMS1Window = 
 #' 				getOption("RMassBank")$recalibrateMS1Window)
 #' @param spec A \code{msmsWorkspace} or \code{RmbSpectraSetList} containing spectra for which MS1 "peaks" should be "constructed". 
 #' @param recalibrateMS1Window Window width to look for MS1 peaks to recalibrate (in ppm).

@@ -36,6 +36,10 @@ In case o is an \code{RmbSpectrum2}, this represents the \code{RmbSpectraSet} it
 The information data block for the record header, as stored in
 \code{mbdata_relisted} after loading an infolist.}
 
+\item{analyticalInfo}{A list containing information for the `AC$` section of
+a MassBank record, with elements `ai, ac_lc, ac_ms` for general, LC and MS
+info respectively.}
+
 \item{additionalPeaks}{data.frame
 If present, a table with additional peaks to add into the spectra.
         As loaded with \code{\link{addPeaks}}.}
@@ -56,7 +60,7 @@ MassBank record format:
 }
 \seealso{
 \code{\link{mbWorkflow}}, \code{\link{addPeaks}},
-\code{\link{gatherCompound}}, \code{\link{toMassbank}}
+\code{\link{toMassbank}}
 }
 \author{
 Michael Stravs

@@ -39,6 +39,18 @@ if a lockmass calibration is known (however you have to build the calibration yo
 
 \item{peaksCache}{If present, the complete output of \code{mzR::peaks(msRaw)}. This speeds up the lookup
 if multiple compounds should be searched in the same file.}
+
+\item{polarity}{If a value is given, scans are filtered to this polarity before EIC
+extraction. Valid values are 1 for positive, 0 for negative (according to mzR), or a RMassBank
+`mode` (e.g. `pH, pM, mH...`) from which the polarity can be derived.}
+
+\item{msLevel}{Which MS level to target for EIC extraction. By default this is 1; level 2
+can be used to extract the EIC of fragments for a specific precursor or to extract EICs
+from DIA data.}
+
+\item{precursor}{Which precursor to target for EIC extraction. If `NULL`, the scans are not 
+filtered by precursor. Use this only for `msLevel != 1`. If a `precursor` filter is set for 
+`msLevel == 1`, all scans will be filtered out.}
 }
 \value{
 A \code{[rt, intensity, scan]} matrix (\code{scan} being the scan number.)

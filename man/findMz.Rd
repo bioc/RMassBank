@@ -10,7 +10,8 @@
 \alias{findLevel}
 \title{Find compound information}
 \usage{
-findMz(cpdID, mode = "pH", ppm = 10, deltaMz = 0, retrieval="standard")
+findMz(cpdID, mode = "pH", ppm = 10, deltaMz = 0, retrieval="standard",
+unknownMass = getOption("RMassBank")$unknownMass )
 
 findRt(cpdID) 
 
@@ -44,6 +45,10 @@ molecular mass + and - 10 ppm).}
 \item{retrieval}{A value that determines whether the files should be handled either as "standard",
 if the compoundlist is complete, "tentative", if at least a formula is present or "unknown"
 if the only know thing is the m/z}
+
+\item{unknownMass}{`charged` or `neutral` (`charged` assumed by default) specifies
+whether a mass of an unknown compound (level 5) refers to the charged or neutral mass
+(and correspondingly, whether it must be shifted or not to find the m/z value)}
 
 \item{compact}{Only for \code{findLevel}, returns the "retrieval" parameter used for many functions 
 within RMassBank if TRUE}

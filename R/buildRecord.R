@@ -4,6 +4,7 @@
 ###############################################################################
 
 #' @import assertthat
+#' @import glue
 
 
 #' @title Build MassBank records
@@ -28,13 +29,16 @@
 #' @param mbdata list
 #' The information data block for the record header, as stored in
 #' \code{mbdata_relisted} after loading an infolist.
+#' @param analyticalInfo A list containing information for the `AC$` section of
+#'  a MassBank record, with elements `ai, ac_lc, ac_ms` for general, LC and MS
+#'  info respectively.
 #' @param additionalPeaks data.frame
 #' If present, a table with additional peaks to add into the spectra.
 #' 		As loaded with \code{\link{addPeaks}}.
 #' @return An object of the same type as was used for the input with new information added to it
 #' @author Michael Stravs
 #' @seealso \code{\link{mbWorkflow}}, \code{\link{addPeaks}},
-#' \code{\link{gatherCompound}}, \code{\link{toMassbank}}
+#' \code{\link{toMassbank}}
 #' @references MassBank record format:
 #' \url{http://www.massbank.jp/manuals/MassBankRecord_en.pdf}
 #' @rdname buildRecord
@@ -87,57 +91,15 @@ setMethod("buildRecord", "RmbSpectraSet", function(o, ..., mbdata = list(), addi
 	return(ac)
 }
 
-# For each compound, this function creates the "lower part" of the MassBank record, i.e.
-# everything that comes after AC$INSTRUMENT_TYPE.
 
-#' Compose data block of MassBank record
+#' Get analytical info for MassBank record
 #' 
-#' \code{gatherCompound} composes the data blocks (the "lower half") of all
-#' MassBank records for a compound, using the annotation data in the RMassBank
-#' options, spectrum info data from the \code{analyzedSpec}-type record and the
-#' peaks from the reanalyzed, multiplicity-filtered peak table. It calls
-#' \code{gatherSpectrum} for each child spectrum.
+#' Collects the info for `ai, ac_lc, ac_ms` for general, LC and MS
+#'  info respectively. The info comes from the settings except for the
+#'  compound-specific part, which is omitted if there is no `cpd` specified.
 #' 
-#' The returned data blocks are in format \code{list( "AC\$MASS_SPECTROMETRY" =
-#' list('FRAGMENTATION_MODE' = 'CID', ...), ...)} etc.
-#' 
-#' @aliases gatherCompound gatherSpectrum
-#' @usage gatherCompound(spec, aggregated, additionalPeaks = NULL, retrieval="standard")
-#' 
-#' 		gatherSpectrum(spec, msmsdata, ac_ms, ac_lc, aggregated, 
-#'	 		additionalPeaks = NULL, retrieval="standard")
-#' @param spec A \code{RmbSpectraSet} object, representing a compound with multiple spectra.
-#' @param aggregated An aggregate peak table where the peaks are extracted from.
-#' @param msmsdata A \code{RmbSpectrum2} object from the \code{spec} spectra set, representing a single spectrum to give a record.
-#' @param ac_ms,ac_lc Information for the AC\$MASS_SPECTROMETRY and
-#' AC\$CHROMATOGRAPHY fields in the MassBank record, created by
-#' \code{gatherCompound} and then fed into \code{gatherSpectrum}.
-#' @param additionalPeaks If present, a table with additional peaks to add into the spectra.
-#' 		As loaded with \code{\link{addPeaks}}.
-#' @param retrieval A value that determines whether the files should be handled either as "standard",
-#' if the compoundlist is complete, "tentative", if at least a formula is present or "unknown"
-#' if the only know thing is the m/z
-#' @return \code{gatherCompound} returns a list of tree-like MassBank data
-#' blocks. \code{gatherSpectrum} returns one single MassBank data block or
-#' \code{NA} if no useful peak is in the spectrum. 
-#' @note Note that the global table \code{additionalPeaks} is also used as an
-#' additional source of peaks.
-#' @author Michael Stravs
-#' @seealso \code{\link{mbWorkflow}}, \code{\link{buildRecord}}
-#' @references MassBank record format:
-#' \url{http://www.massbank.jp/manuals/MassBankRecord_en.pdf}
-#' @examples \dontrun{
-#'      myspectrum <- w@@spectra[[1]]
-#' 		massbankdata <- gatherCompound(myspectrum, w@@aggregated)
-#' 		# Note: ac_lc and ac_ms are data blocks usually generated in gatherCompound and
-#' 		# passed on from there. The call below gives a relatively useless result :)
-#' 		ac_lc_dummy <- list()
-#' 		ac_ms_dummy <- list() 
-#' 		justOneSpectrum <- gatherSpectrum(myspectrum, myspectrum@@child[[2]],
-#' 			ac_ms_dummy, ac_lc_dummy, w@@aggregated)
-#' }
-#' 
-#' 
+#' @param cpd A `RmbSpectraSet` object
+#'
 #' @export
 getAnalyticalInfo <- function(cpd = NULL)
 {
@@ -345,35 +307,131 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	{
 		mbdata[["PROJECT"]] <- userSettings$project
 	}
-	# Use 'simple', 'standard' or 'selfDefined' accessionBuilder
-	# depending on user input
-	if("accessionBuilderType" %in% names(userSettings))
+	
+	
+	spectrum@info <- mbdata
+	
+
+	if(is.null(userSettings$accessionBuilderType) & 
+	   ("accessionBuilder" %in% names(userSettings)))
 	{
-		assert_that(userSettings$accessionBuilderType %in% c(
+	  if(is.function(userSettings$accessionBuilder)) {
+	    assert_that(has_args(userSettings$accessionBuilder,
+	                         c('cpd', 'spectrum', 'subscan'), exact=TRUE),
+	                msg=paste('accessionBuilder must have function arguments',
+	                          'cpd, spectrum, subscan in this order'))
+	    mbdata[['ACCESSION']] <- userSettings$accessionBuilder(cpd, spectrum, subscan)
+	  }
+	    
+	  else
+	    mbdata[['ACCESSION']] <- .flexAccessionBuilder(
+	      userSettings$accessionBuilder,
+	      cpd, spectrum, subscan
+	    )
+	}
+	else if("accessionBuilderType" %in% names(userSettings)) {
+	  # Use 'simple', 'standard' or 'selfDefined' accessionBuilder
+	  # depending on user input
+		assert_that(userSettings$accessionBuilder %in% c(
 		  "standard", "simple", "selfDefined"),
 		  msg=paste("accessionNumberType must be one of",
-		  "'standard', 'simple' or 'selfDefined'"))
+		  "'standard', 'simple', 'selfDefined'"))
 		mbdata[['ACCESSION']] <- switch(
-		  userSettings$accessionBuilderType,
-		  simple = .simpleAccessionBuilder(subscan),
-		  standard = .standardAccessionBuilder(cpd, subscan),
-		  selfDefined = .selfDefinedAccessionBuilder(cpd, spectrum,
-		  subscan)
+		  userSettings$accessionBuilder,
+		  simple = .simpleAccessionBuilder(cpd, spectrum, subscan),
+		  standard = .standardAccessionBuilder(cpd, spectrum, subscan),
+		  selfDefined = .selfDefinedAccessionBuilder(cpd, spectrum, subscan)
 		)
 	}
 	else
 	{
 		mbdata[['ACCESSION']] <- .standardAccessionBuilder(cpd, subscan)
 	}
+	
+	if(userSettings$accessionValidate) {
+	  assert_that(
+	    .accessionValidate(mbdata[['ACCESSION']]),
+	    msg = "Generated ACCESSION is invalid. You may bypass validity check with `accessionValidate: FALSE` in the RMassBank settings file."
+	  )
+	}
 
+  # and again, to get the ACCESSION back into the spectrum
 	spectrum@info <- mbdata
-
 	spectrum <- renderPeaks(spectrum, cpd=cpd, additionalPeaks=additionalPeaks, ...)
 
 	return(spectrum)
 }
 
-.simpleAccessionBuilder <- function(subscan)
+
+#' Define a programmatic or gluey ACCESSION builder
+#' 
+#' @param accessionBuilder a function that takes parameters `cpd` (an instance 
+#'   of `RmbSpectraSet`), `spectrum` (an instance of `RmbSpectrum2`) and 
+#'   `subscan` (an integer denoting relative scan id) and returns a `character`.
+#'   Alternatively a glue string just like the one in the RMassBank settings.
+#'   
+#' @export
+setAccessionBuilder <- function(accessionBuilder) {
+  userSettings <- getOption("RMassBank")
+  if(is.character(accessionBuilder))
+    userSettings$accessionBuilder <- accessionBuilder
+  else {
+    assert_that(class(accessionBuilder)=='function',
+                msg='accessionBuilder must be a function')
+    assert_that(has_args(accessionBuilder,
+                         c('cpd', 'spectrum', 'subscan'), exact=TRUE),
+                msg=paste('accessionBuilder must have function arguments',
+                          'cpd, spectrum, subscan in this order'))
+    userSettings$accessionBuilder <- accessionBuilder
+  }
+  options(RMassBank = userSettings)
+}
+
+
+.accessionValidate <- function(accession) {
+  pattern <- "^MSBNK-[A-Za-z0-9_]{1,32}-[A-Z0-9_]{1,64}$"
+  grepl(pattern, accession)
+}
+
+.flexAccessionBuilder <- function(string, cpd, spectrum, subscan) {
+  userSettings = getOption("RMassBank")
+  adduct <- getAdductProperties(cpd@mode, "")
+  shift <- userSettings$accessionNumberShifts[[cpd@mode]]
+  variables <- list()
+  variables$compound_id <- function(digits) sprintf(glue("%0{digits}d"), as.numeric(cpd@id))
+  variables$scan_id <- function(digits) sprintf(glue("%0{digits}d"), subscan + shift)
+  variables$incremental_id <- function(digits) sprintf(glue("%0{digits}d"), userSettings$accessionNumberStart + subscan)
+  variables$entry_prefix <- userSettings$annotations$entry_prefix
+  variables$contributor_prefix <- userSettings$annotations$contributor_prefix
+  variables$collision_energy_raw <- spectrum@collisionEnergy
+  variables$metadata <- c(
+    spectrum@info$`AC$MASS_SPECTROMETRY`,
+    spectrum@info$`CH$LINK`
+  )
+  variables$metadata$INSTRUMENT_TYPE <- spectrum@info$`AC$INSTRUMENT_TYPE`
+  variables$metadata$INCHIKEY2D <- substr(spectrum@info$`CH$LINK`$INCHIKEY, 1, 14)
+  variables$info <- function(key) gsub('[^A-Z0-9]', '_', toupper(variables$metadata[[key]]))
+  variables$mode <- toupper(cpd@mode)
+  variables$mode_hash <- substr(toupper(adduct$hash), 1, .adductHashSize)
+  # a "MS condition hash" merging instrument type, ionization, collision and CE
+  # AC$INSTRUMENT_TYPE: LC-ESI-ITFT
+  # AC$MASS_SPECTROMETRY: MS_TYPE MS2
+  # AC$MASS_SPECTROMETRY: ION_MODE POSITIVE
+  # AC$MASS_SPECTROMETRY: IONIZATION ESI
+  # AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE HCD
+  # AC$MASS_SPECTROMETRY: COLLISION_ENERGY 15 % (nominal)
+  # AC$MASS_SPECTROMETRY: RESOLUTION 15000
+  variables$polarity <- function(digits=1) substr(variables$metadata$ION_MODE, 1, digits)
+  variables$condition <- glue_data(
+    variables$metadata,
+    "{INSTRUMENT_TYPE}${MS_TYPE}${ION_MODE}${IONIZATION}${FRAGMENTATION_MODE}${COLLISION_ENERGY}")
+  variables$condition_hash <- substr(
+    toupper(digest(variables$condition, serialize=FALSE)),
+    1, .adductHashSize)
+  as.character(glue(string, .envir = variables))
+}
+
+.simpleAccessionBuilder <- function(cpd, spectrum, subscan)
 {
 	userSettings = getOption("RMassBank")
 	assert_that('accessionNumberStart' %in% names(userSettings),
@@ -383,16 +441,21 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	  "'standard' or 'selfDefined' to use a different accessionBuilder.", 
 	  "For detailed explanations of accessionBuilders, check out the",
 	  "'Settings' section of the RMassBank vignette."))
-	sprintf('%s%06d', userSettings$annotations$entry_prefix,
-	  subscan + userSettings$accessionNumberStart)
+	.flexAccessionBuilder("MSBNK-{contributor_prefix}-{entry_prefix}{incremental_id(6)}", 
+	                      cpd, spectrum, subscan)
 }
 
-.standardAccessionBuilder <- function(cpd, subscan)
+.legacyAccessionBuilder <- function(cpd, spectrum, subscan)
 {
-	userSettings = getOption("RMassBank")
-	shift <- userSettings$accessionNumberShifts[[cpd@mode]]
-	sprintf("%s%04d%02d", userSettings$annotations$entry_prefix,
-	  as.numeric(cpd@id), subscan+shift)
+  .flexAccessionBuilder("{entry_prefix}{incremental_id(6)}", 
+                        cpd, spectrum, subscan)
+}
+
+.standardAccessionBuilder <- function(cpd, spectrum, subscan)
+{
+  .flexAccessionBuilder("MSBNK-{contributor_prefix}-{entry_prefix}{compound_id(4)}{scan_id(2)}", 
+                        cpd, spectrum, subscan)
+  
 }
 	
 .selfDefinedAccessionBuilder <- function(cpd, spectrum, subscan)
@@ -406,6 +469,7 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	  "to 'standard' or 'simple' to use a different accessionBuilder.", 
 	  "For detailed explanations of accessionBuilders, check out the",
 	  "'Settings' section of the RMassBank vignette."))
+	accessionBuilder <- NULL
 	source(userSettings$accessionBuilderFile)
 	#The file must contain a function called 'accessionBuilder'
 	#with arguments cpd, spectrum, subscan

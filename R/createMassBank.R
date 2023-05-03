@@ -129,12 +129,14 @@ resetInfolists <- function(mb)
 							CH.IUPAC = character(0), CH.LINK.CAS = character(0), CH.LINK.CHEBI = integer(0), 
 							CH.LINK.HMDB = character(0), CH.LINK.KEGG = character(0), CH.LINK.LIPIDMAPS = character(0), 
 							CH.LINK.PUBCHEM = character(0), CH.LINK.INCHIKEY = character(0), 
-							CH.LINK.CHEMSPIDER = integer(0), CH.LINK.COMPTOX = character(0)), .Names = c("X", "id", "dbcas", 
+							CH.LINK.CHEMSPIDER = integer(0), CH.LINK.COMPTOX = character(0), 
+							AUTHORS = character(0)
+							), .Names = c("X", "id", "dbcas", 
 							"dbname", "dataused", "COMMENT.CONFIDENCE", "COMMENT.ID", 
               "CH.NAME1", "CH.NAME2", "CH.NAME3", "CH.NAME4", "CH.NAME5", "CH.COMPOUND_CLASS", "CH.FORMULA", 
 							"CH.EXACT_MASS", "CH.SMILES", "CH.IUPAC", "CH.LINK.CAS", "CH.LINK.CHEBI", 
 							"CH.LINK.HMDB", "CH.LINK.KEGG", "CH.LINK.LIPIDMAPS", "CH.LINK.PUBCHEM",
-							"CH.LINK.INCHIKEY", "CH.LINK.CHEMSPIDER", "CH.LINK.COMPTOX"), row.names = integer(0), class = "data.frame")
+							"CH.LINK.INCHIKEY", "CH.LINK.CHEMSPIDER", "CH.LINK.COMPTOX", "AUTHORS"), row.names = integer(0), class = "data.frame")
 	if(getOption("RMassBank")$include_sp_tags)
 	{
 	  mb@mbdata_archive["SP.SAMPLE"] <- character(0)
@@ -257,6 +259,9 @@ mbWorkflow <- function(mb, steps=c(1,2,3,4,5,6,7,8), infolist_path="./infolist.c
 	  mb@compiled <- lapply(
 			  selectSpectra(mb@spectra, "found", "object"),
 			  function(r) {
+			    # guard against NSE warnings from "filter"
+			    filterOK <- NULL
+			    best <- NULL
 				  rmb_log_info(paste("Compiling: ", r@name, sep=""))
 				  mbdata <- mb@mbdata_relisted[[which(mb@mbdata_archive$id == as.numeric(r@id))]]
 				  if(filter)
@@ -1262,6 +1267,10 @@ readMbdata <- function(row)
     ## SP$SAMPLE
   if(all(nchar(row[["SP.SAMPLE"]]) > 0, row[["SP.SAMPLE"]] != "NA", !is.na(row[["SP.SAMPLE"]]), na.rm = TRUE))
     mbdata[['SP$SAMPLE']] <- row[["SP.SAMPLE"]]
+  
+  if(!is.na(row[["AUTHORS"]]))
+    mbdata[["AUTHORS"]] = row[["AUTHORS"]]
+  
 
 
   
@@ -1455,8 +1464,13 @@ annotator.default <- function(annotation, formulaTag)
 #' headers for the first line, all data rows are printed space-separated. 
 #' }
 #' 
-#' @usage toMassbank(mbdata)
-#' @param mbdata A MassBank record in list format.
+#' @usage toMassbank(o, ...)
+#' @param o An object to convert to MassBank record format. This may be
+#'  a single `RmbSpectrum2`, or a complete compound (an `RmbSpectraSet`),
+#' @param ... Parameters passed to the implementation, 
+#'  in particular `addAnnotation`
+#' @param addAnnotation `logical`, whether to add peak annotations (putative formulas) to the record.
+#'  
 #' @return The result is a text array, which is ready to be written to the disk
 #' as a file.
 #' @note The function iterates over the list item names. \bold{This means that
@@ -1482,12 +1496,15 @@ annotator.default <- function(annotation, formulaTag)
 #' @export
 setGeneric("toMassbank", function(o, ...) standardGeneric("toMassbank"))
 
+
+#' @rdname toMassbank
 #' @export
 setMethod("toMassbank", "RmbSpectraSet", function(o, addAnnotation = getOption("RMassBank")$add_annotation)
     {
       lapply(o@children, function(s) toMassbank(s, addAnnotation))
     })
 
+#' @rdname toMassbank
 #' @export
 setMethod("toMassbank", "RmbSpectrum2", function(o, addAnnotation = getOption("RMassBank")$add_annotation)
     {
@@ -1571,7 +1588,9 @@ setMethod("toMassbank", "RmbSpectrum2", function(o, addAnnotation = getOption("R
         for(row in 1:nrow(mbdata[[entry]]))
         {
           mbf[[count]] <<- paste("  ", 
-                                 paste(mbdata[[entry]][row,],collapse=" "), 
+                                 paste(
+                                   prettyNum(mbdata[[entry]][row,], scientific = FALSE),
+                                   collapse=" "), 
                                  sep="")
           count <<- count+1
         }
@@ -1634,10 +1653,11 @@ setMethod("toMassbank", "RmbSpectrum2", function(o, addAnnotation = getOption("R
 #' \code{files}, the accession number is not "accessible" anymore since it's in
 #' the file.
 #' 
-#' @usage exportMassbank(compiled, files, molfile)
+#' @usage exportMassbank(compiled, molfile = NULL)
 #' @param compiled \code{RmbSpectraSet}
-#' the spectra of one compound for which files should be exported
-#' @param molfile A molfile from \code{\link{createMolfile}}
+#'   the spectra of one compound for which files should be exported
+#' @param molfile A molfile from \code{\link{createMolfile}}; 
+#'   deprecated since molfiles are not used by MassBank anymore.
 #' @return No return value.
 #' @note An improvement would be to write the accession numbers into
 #' \code{names(compiled)} and later into \code{names(files)} so \code{compiled}
@@ -1856,10 +1876,8 @@ gatherDataMinimal.cpd <- function(cpd){
 
 gatherDataMinimal.spectrum <- function(spectrum){
   
-  ##Read from Compoundlist
-  if(length(cpd@smiles) == 1) smiles <- cpd@smiles
-  else
-    smiles <- ""
+  
+  smiles <- ""
   
   ##Create 
   mbdata <- list()

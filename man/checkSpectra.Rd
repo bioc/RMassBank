@@ -24,9 +24,9 @@ marked empty - empty should mean found, but no useful peaks at all. This is not 
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{s = RmbSpectraSet,property = character}: 
-}}
+\item \code{checkSpectra(s = RmbSpectraSet, property = character)}: 
 
+}}
 \author{
 stravsmi
 }

@@ -4,22 +4,17 @@
 \alias{filterPeaksMultiplicity}
 \title{Multiplicity filtering: Removes peaks which occur only once in a n-spectra set.}
 \usage{
-filterPeaksMultiplicity(peaks, formulacol, recalcBest = TRUE)
+filterPeaksMultiplicity(w, recalcBest = TRUE)
 }
 \arguments{
+\item{w}{a `msmsWorkspace` object where formulas have been assigned to peaks}
+
 \item{recalcBest}{Whether the best formula for each peak should be re-determined.
 This is necessary for results from the ordinary \code{\link{analyzeMsMs}}
 analysis which allows multiple potential formulas per peak - the old best match
 could potentially have been dropped because of multiplicity filtering. For results
 from \code{\link{reanalyzeFailpeak}} this is not necessary, since only one potential
 formula is assigned in this case.}
-
-\item{peaks}{An aggregate peak data.frame containing all peaks to be analyzed; with at least
-the columns \code{cpdID, scan, mzFound} and one column for the formula
-specified with the \code{formulacol} parameter.}
-
-\item{formulacol}{Which column the assigned formula is stored in. (Needed to separately process \code{"formula"} and
-\code{"reanalyzed.formula"} multiplicites.)}
 }
 \value{
 The peak table is returned, enriched with columns:

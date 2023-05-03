@@ -6,6 +6,9 @@
 \usage{
 rmb_log_debug(...)
 }
+\arguments{
+\item{...}{The log message, as for `logger::log_...` functions}
+}
 \description{
 The logging file to be used can be specified by the user in the \code{logging_file} field of \code{settings.ini}
 }

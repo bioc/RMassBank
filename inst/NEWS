@@ -1,3 +1,8 @@
+Changes in version 3.7.1.2
+
+- Breaking: new ACCESSION format and builder introduced. Consult the settings
+  template (e.g., `RmbSettingsTemplate("settings.ini")`) for options.
+
 Changes in version 3.7.1
 
 - Remove getCompTox() because EPA AcTORWS web services have been retired

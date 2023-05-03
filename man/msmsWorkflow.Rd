@@ -50,6 +50,9 @@ used to extract peaks. MassBank will read existing records,
 so that e.g. a recalibration can be performed, and "peaklist" 
 just requires a CSV with two columns and the column header "mz", "int".}
 
+\item{filetable}{If including step 1 (data extraction), a `filetable` argument
+to be passed to \code{\link{msmsRead}}.}
+
 \item{findPeaksArgs}{A list of arguments that will be handed to the xcms-method findPeaks via do.call}
 
 \item{plots}{A parameter that determines whether the spectra should be plotted or not (This parameter is only used for the xcms-method)}

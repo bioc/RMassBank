@@ -6,16 +6,19 @@
 \alias{recalibrateSingleSpec}
 \title{Recalibrate MS/MS spectra}
 \usage{
-makeRecalibration(w, mode, 
+makeRecalibration(w,  
  	recalibrateBy = getOption("RMassBank")$recalibrateBy,
 		recalibrateMS1 = getOption("RMassBank")$recalibrateMS1,
 		recalibrator = getOption("RMassBank")$recalibrator,
 		recalibrateMS1Window = getOption("RMassBank")$recalibrateMS1Window 
 		)
 
- recalibrateSpectra(mode, rawspec = NULL, rc = NULL, rc.ms1=NULL, w = NULL,
+ recalibrateSpectra(rawspec = NULL, rc = NULL, rc.ms1=NULL, w = NULL,
 		recalibrateBy = getOption("RMassBank")$recalibrateBy,
 		recalibrateMS1 = getOption("RMassBank")$recalibrateMS1)
+
+
+
 
  recalibrateSingleSpec(spectrum, rc, 
 		recalibrateBy = getOption("RMassBank")$recalibrateBy)

@@ -4,13 +4,14 @@
 \alias{exportMassbank}
 \title{Export internally stored MassBank data to files}
 \usage{
-exportMassbank(compiled, files, molfile)
+exportMassbank(compiled, molfile = NULL)
 }
 \arguments{
 \item{compiled}{\code{RmbSpectraSet}
 the spectra of one compound for which files should be exported}
 
-\item{molfile}{A molfile from \code{\link{createMolfile}}}
+\item{molfile}{A molfile from \code{\link{createMolfile}}; 
+deprecated since molfiles are not used by MassBank anymore.}
 }
 \value{
 No return value.

@@ -1,4 +1,4 @@
-#' @import XML RCurl rjson httr
+#' @import XML rjson httr
 NULL
 ## library(XML)
 ## library(httr)
@@ -6,16 +6,14 @@ NULL
 
 
 retrieveDataWithRetry <- function(url, timeout, maximumNumberOfRetries = 5, retryDelayInSeconds = 3){
-  #data <- getURL(URLencode(url), timeout=8)
-  
+
   data <- NULL
   queryIsSuccessful <- FALSE
   numberOfRetries <- 0
   while(!queryIsSuccessful & numberOfRetries < maximumNumberOfRetries){
     data <- tryCatch(
       expr = {
-        #data <- getURL(url = url, timeout = timeout)
-        res <- GET(URLencode(url))
+        res <- GET(utils::URLencode(url))
         data <- httr::content(res, type="text", encoding="UTF-8")
         
         queryIsSuccessful <- TRUE
@@ -77,7 +75,7 @@ retrieveDataWithRetry <- function(url, timeout, maximumNumberOfRetries = 5, retr
 getCactus <- function(identifier,representation){
   identifier <- gsub('#', '%23', identifier)
   ret <- tryCatch(httr::GET(paste("https://cactus.nci.nih.gov/chemical/structure/",
-                            URLencode(identifier), "/", representation, sep = "")),
+                            utils::URLencode(identifier), "/", representation, sep = "")),
                   error = function(e) NA)
   if (all(is.na(ret)))
     return(NA)
@@ -117,9 +115,8 @@ getPcId <- function(query, from = "inchikey")
 	errorvar <- 0
 	currEnvir <- environment()
 	
-	tryCatch(
-    {#		data <- getURL(URLencode(url),timeout=8),
-	    res <- GET(URLencode(url))
+	tryCatch({
+	    res <- GET(utils::URLencode(url))
 	    data <- httr::content(res, type="text", encoding="UTF-8")
     },
 		error=function(e){
@@ -148,29 +145,6 @@ getPcId <- function(query, from = "inchikey")
 		return(PcID)
 	}
 }
-
-# The following function is unfinished.
-# getPcRecord <- function(pcid)
-# {
-#   baseUrl <- "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
-#   term <- paste(baseUrl, "esummary.fcgi?db=pccompound&id=", URLencode(as.character(pcid)), 
-#                 
-#                 sep='')
-#   ret <- getURL(term)
-#   xml <- xmlParseDoc(ret,asText=TRUE)
-#   browser()
-# }
-
-
-# Note: some of the CHEBI codes returned are erroneous. (When the entry in 
-# CTS starts with "CHEBI:" instead of just the number, the XML output)
-# Also, there is no ChemSpider ID in the XML output, unfortunately.
-
-
-
-
-
-
 
 
 #' Retrieve information from CTS
@@ -210,11 +184,9 @@ getCtsRecord <- function(key)
 	
 	##tryCatch a CTS timeout
 	##
-	tryCatch(
-		{
-			#data <- getURL(paste0(baseURL,key), timeout=10)
+	tryCatch({
 			url <- paste0(baseURL,key)
-			res <- GET(URLencode(url))
+			res <- GET(utils::URLencode(url))
 			data <- httr::content(res, type="text", encoding="UTF-8")
 		},
 		error=function(e){
@@ -255,10 +227,8 @@ getCtsKey <- function(query, from = "Chemical Name", to = "InChIKey")
 	
 	##tryCatch a CTS timeout
 	##
-	tryCatch(
-		{
-			#data <- getURL(URLencode(url), timeout=10)
-			res <- GET(URLencode(url))
+	tryCatch({
+			res <- GET(utils::URLencode(url))
 			data <- httr::content(res, type="text", encoding="UTF-8")
 		},
 		error=function(e){
@@ -348,9 +318,8 @@ CTS.externalIdTypes <- function(data)
 	
 	errorvar <- 0
 	currEnvir <- environment()
-	tryCatch(
-		{#ret <- getURL(URLencode(url), timeout=8),
-	    res <- GET(URLencode(url))
+	tryCatch({
+	    res <- GET(utils::URLencode(url))
 	    ret <- httr::content(res, type="text", encoding="UTF-8")
 	  },
 	  error=function(e){
@@ -375,9 +344,8 @@ getPcCHEBI <- function(query, from = "inchikey")
 	errorvar <- 0
 	currEnvir <- environment()
 	
-	tryCatch(
-		{#data <- getURL(URLencode(url),timeout=8),
-		  res <- GET(URLencode(url))
+	tryCatch({
+		  res <- GET(utils::URLencode(url))
 		  data <- httr::content(res, type="text", encoding="UTF-8")
 		},
 		error=function(e){
@@ -433,22 +401,8 @@ getCSID <- function(query)
 	baseURL <- "http://www.chemspider.com/InChI.asmx/InChIKeyToCSID?inchi_key="
 	url <- paste0(baseURL, query)
 	
-	#errorvar <- 0
-	#currEnvir <- environment()
-	#
-	#tryCatch(
-	#	data <- getURL(URLencode(url), timeout=8),
-	#	error=function(e){
-	#	currEnvir$errorvar <- 1
-	#})
-	#
-	#if(errorvar){
-	#	warning("Chemspider is currently offline")
-	#	return(NA)
-	#}
-	
-	data <- retrieveDataWithRetry(url = URLencode(url), timeout=8)
-	if(is.null(data)){
+	data <- retrieveDataWithRetry(url = utils::URLencode(url), timeout=8)
+	if(is.null(data)) {
 		warning("Chemspider is currently offline")
 		return(NA)
 	}
@@ -470,9 +424,8 @@ getPcSynonym <- function (query, from = "inchikey")
 	errorvar <- 0
 	currEnvir <- environment()
 	
-	tryCatch(
-		{#data <- getURL(URLencode(url),timeout=8)
-		  res <- GET(URLencode(url))
+	tryCatch({
+		  res <- GET(utils::URLencode(url))
 		  data <- httr::content(res, type="text", encoding="UTF-8")
 		},
 		error=function(e){
@@ -515,9 +468,8 @@ getPcIUPAC <- function (query, from = "inchikey")
 	errorvar <- 0
 	currEnvir <- environment()
 	
-	tryCatch(
-		{#data <- getURL(URLencode(url),timeout=8)
-		  res <- GET(URLencode(url))
+	tryCatch({
+		  res <- GET(utils::URLencode(url))
 		  data <- httr::content(res, type="text", encoding="UTF-8")
 		},
 		error=function(e){
@@ -563,9 +515,8 @@ getPcInchiKey <- function(query, from = "smiles"){
 	errorvar <- 0
 	currEnvir <- environment()
 	
-	tryCatch(
-		{#data <- getURL(URLencode(url),timeout=8)
-		  res <- GET(URLencode(url))
+	tryCatch({
+		  res <- GET(utils::URLencode(url))
 		  data <- httr::content(res, type="text", encoding="UTF-8")
 		},
 		error=function(e){
@@ -600,9 +551,8 @@ getPcSDF <- function(query, from = "smiles"){
 	errorvar <- 0
 	currEnvir <- environment()
 	
-	tryCatch(
-		{#data <- getURL(URLencode(url),timeout=8)
-		  res <- GET(URLencode(url))
+	tryCatch({
+		  res <- GET(utils::URLencode(url))
 		  data <- httr::content(res, type="text", encoding="UTF-8")
 		},
 		error=function(e){
