@@ -1588,7 +1588,9 @@ setMethod("toMassbank", "RmbSpectrum2", function(o, addAnnotation = getOption("R
         for(row in 1:nrow(mbdata[[entry]]))
         {
           mbf[[count]] <<- paste("  ", 
-                                 paste(mbdata[[entry]][row,],collapse=" "), 
+                                 paste(
+                                   prettyNum(mbdata[[entry]][row,], scientific = FALSE),
+                                   collapse=" "), 
                                  sep="")
           count <<- count+1
         }
