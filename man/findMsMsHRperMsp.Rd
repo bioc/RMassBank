@@ -37,6 +37,6 @@ convert the results to MassBank records.
 }
 \section{Functions}{
 \itemize{
-\item \code{findMsMsHRperMsp.direct}: A submethod of findMsMsHrperxcms that retrieves basic spectrum data
-}}
+\item \code{findMsMsHRperMsp.direct()}: A submethod of findMsMsHrperxcms that retrieves basic spectrum data
 
+}}

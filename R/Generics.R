@@ -9,13 +9,10 @@
 #' Selects peaks from aggregate table according to different criteria.
 #' 
 #' @param o \code{msmsWorkspace} or aggregate \code{data.frame} from a workspace.
-#' @param good if \code{TRUE}, include good (matched within filter criteria) peaks.
-#' @param bad if \code{TRUE}, include bad (not matched within filter criteria) peaks. Note: \code{good} and \code{bad} can be
-#' 			combined, both are returned in that case.
-#' @param cleaned if \code{TRUE}, return only peaks which passed the noise filter. Note: If the noise filter was not applied, the
-#' 			parameter has no effect. Also, a \code{noise} column is in any case added to the output, even if not present before.
-#' @param best if \code{TRUE}, only select the best match for each peak (i.e. the formula with smallest delta ppm). Otherwise multiple
-#' 			matches can be returned.
+#' @param filter The expression (to be evaluated in context of the `getData()`
+#'  result on the spectrum) to define the peaks to keep. For example, `good & filterOK`
+#' @param enclos The context in which to evaluate the filter expression, by default set
+#'  such that the spectrum `getData()` is retrieved.
 #' @param ... no additional parameters
 #' @return Peak dataframe according to the specified criteria.
 #' 

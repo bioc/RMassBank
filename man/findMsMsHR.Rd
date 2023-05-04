@@ -80,6 +80,9 @@ freshly from \code{msRaw} for every compound.}
 \item{peaksCache}{If present, the complete output of \code{mzR::peaks(msRaw)}. This speeds up the lookup
 if multiple compounds should be searched in the same file.}
 
+\item{enforcePolarity}{If TRUE, scans are filtered for the given `mode`'s polarity when
+finding the target spectrum.}
+
 \item{diaWindows}{A data frame with columns \code{precursorMz}, \code{mzMin}, \code{mzMax} which specifies the precursor and 
 window size of each window for DIA acquisition.}
 
@@ -99,6 +102,9 @@ when locating the MS2 scans.}
 \item{maxCount}{The maximal number of spectra groups to return. One spectra group
 consists of all data-dependent scans from the same precursor whose precursor
 mass matches the specified search mass.}
+
+\item{polarity}{If set (for ?findMsMsHR.mass), scans are filtered for the given `mode`'s polarity when
+finding the target spectrum.}
 }
 \value{
 An \code{RmbSpectraSet} (for \code{findMsMsHR}). Contains parent MS1 spectrum (\code{@parent}), a block of dependent MS2 spectra ((\code{@children})
@@ -121,9 +127,9 @@ Different versions of the function get the data from different sources. Note tha
 }
 \section{Functions}{
 \itemize{
-\item \code{findMsMsHR.mass}: A submethod of find MsMsHR that retrieves basic spectrum data
-}}
+\item \code{findMsMsHR.mass()}: A submethod of find MsMsHR that retrieves basic spectrum data
 
+}}
 \note{
 \code{findMsMs.direct} is deactivated
 }

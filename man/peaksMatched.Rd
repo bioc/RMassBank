@@ -24,11 +24,11 @@ Select matching/unmatching peaks from aggregate table
 }
 \section{Functions}{
 \itemize{
-\item \code{peaksMatched,data.frame-method}: A method to retrieve the matched peaks from the "aggregated" slot (a data.frame object) in an msmsWorkSpace
+\item \code{peaksMatched(data.frame)}: A method to retrieve the matched peaks from the "aggregated" slot (a data.frame object) in an msmsWorkSpace
 
-\item \code{peaksMatched,msmsWorkspace-method}: A method to retrieve the matched peaks from an msmsWorkSpace
+\item \code{peaksMatched(msmsWorkspace)}: A method to retrieve the matched peaks from an msmsWorkSpace
+
 }}
-
 \author{
 stravsmi
 }

@@ -2,10 +2,38 @@
 % Please edit documentation in R/leMsMs.r
 \name{cleanElnoise}
 \alias{cleanElnoise}
+\alias{cleanElnoise,data.frame,numeric,numeric-method}
+\alias{cleanElnoise,RmbSpectrum2,numeric,numeric-method}
+\alias{cleanElnoise,RmbSpectrum2List,numeric,numeric-method}
+\alias{cleanElnoise,RmbSpectraSet,numeric,numeric-method}
 \title{Remove electronic noise}
 \usage{
 cleanElnoise(peaks, noise=getOption("RMassBank")$electronicNoise,
 		width = getOption("RMassBank")$electronicNoiseWidth)
+
+\S4method{cleanElnoise}{data.frame,numeric,numeric}(
+  peaks,
+  noise = getOption("RMassBank")$electronicNoise,
+  width = getOption("RMassBank")$electronicNoiseWidth
+)
+
+\S4method{cleanElnoise}{RmbSpectrum2,numeric,numeric}(
+  peaks,
+  noise = getOption("RMassBank")$electronicNoise,
+  width = getOption("RMassBank")$electronicNoiseWidth
+)
+
+\S4method{cleanElnoise}{RmbSpectrum2List,numeric,numeric}(
+  peaks,
+  noise = getOption("RMassBank")$electronicNoise,
+  width = getOption("RMassBank")$electronicNoiseWidth
+)
+
+\S4method{cleanElnoise}{RmbSpectraSet,numeric,numeric}(
+  peaks,
+  noise = getOption("RMassBank")$electronicNoise,
+  width = getOption("RMassBank")$electronicNoiseWidth
+)
 }
 \arguments{
 \item{peaks}{An aggregated peak frame as described in \code{\link{aggregateSpectra}}. Columns
@@ -23,6 +51,17 @@ Extends the aggregate data frame by column \code{noise} (logical), which is \cod
 \description{
 Removes known electronic noise peaks from a peak table
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{cleanElnoise(peaks = data.frame, noise = numeric, width = numeric)}: Remove known electronic noise peaks
+
+\item \code{cleanElnoise(peaks = RmbSpectrum2, noise = numeric, width = numeric)}: Remove known electronic noise peaks
+
+\item \code{cleanElnoise(peaks = RmbSpectrum2List, noise = numeric, width = numeric)}: Remove known electronic noise peaks
+
+\item \code{cleanElnoise(peaks = RmbSpectraSet, noise = numeric, width = numeric)}: Remove known electronic noise peaks
+
+}}
 \examples{
 # As used in the workflow:
 \dontrun{

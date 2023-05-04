@@ -44,9 +44,9 @@ Picks peaks from mz-files and returns the pseudospectra that CAMERA creates with
 }
 \section{Functions}{
 \itemize{
-\item \code{findMsMsHRperxcms.direct}: A submethod of findMsMsHrperxcms that retrieves basic spectrum data
-}}
+\item \code{findMsMsHRperxcms.direct()}: A submethod of findMsMsHrperxcms that retrieves basic spectrum data
 
+}}
 \examples{
 \dontrun{
 		fileList <- list.files(system.file("XCMSinput", package = "RMassBank"), "Glucolesquerellin", full.names=TRUE)[3]

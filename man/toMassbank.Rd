@@ -2,12 +2,24 @@
 % Please edit documentation in R/createMassBank.R
 \name{toMassbank}
 \alias{toMassbank}
+\alias{toMassbank,RmbSpectraSet-method}
+\alias{toMassbank,RmbSpectrum2-method}
 \title{Write MassBank record into character array}
 \usage{
-toMassbank(mbdata)
+toMassbank(o, ...)
+
+\S4method{toMassbank}{RmbSpectraSet}(o, addAnnotation = getOption("RMassBank")$add_annotation)
+
+\S4method{toMassbank}{RmbSpectrum2}(o, addAnnotation = getOption("RMassBank")$add_annotation)
 }
 \arguments{
-\item{mbdata}{A MassBank record in list format.}
+\item{o}{An object to convert to MassBank record format. This may be
+a single `RmbSpectrum2`, or a complete compound (an `RmbSpectraSet`),}
+
+\item{...}{Parameters passed to the implementation, 
+in particular `addAnnotation`}
+
+\item{addAnnotation}{`logical`, whether to add peak annotations (putative formulas) to the record.}
 }
 \value{
 The result is a text array, which is ready to be written to the disk

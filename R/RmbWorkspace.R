@@ -514,7 +514,7 @@ plotMbWorkspaces <- function(w1, w2=NULL){
 				currentSpectrum <- currentCompound[[j]]
 				plot(currentSpectrum[,"m/z"],currentSpectrum[,"rel.int."], type="h",col="green",lwd=3,ylim=maxpeaks,xlab = "mz", ylab="rel.int", main=plot_title[[i]][[j]])
 				if(!is.null(w2)){
-					points(pl2[[i]][[j]][,"m/z"],-pl2[[i]][[j]][,"rel.int."], type="h",col="red",lwd=3)
+				  graphics::points(pl2[[i]][[j]][,"m/z"],-pl2[[i]][[j]][,"rel.int."], type="h",col="red",lwd=3)
 				}
 			}
 		}

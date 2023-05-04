@@ -4,6 +4,9 @@ NULL
 #' Pass arguments to logger::log_info using custom RMassBank-logging settings
 #'
 #' The logging file to be used can be specified by the user in the \code{logging_file} field of \code{settings.ini}
+#'
+#' @param ... The log message, as for `logger::log_...` functions
+#'
 #' @seealso logger::log_info
 #' @author pstahlhofen
 #' @export
@@ -14,6 +17,9 @@ rmb_log_info <- function(...) {
 #' Pass arguments to logger::log_trace using custom RMassBank-logging settings
 #'
 #' The logging file to be used can be specified by the user in the \code{logging_file} field of \code{settings.ini}
+#' 
+#' @param ... The log message, as for `logger::log_...` functions
+#' 
 #' @seealso logger::log_trace
 #' @author pstahlhofen
 #' @export
@@ -24,6 +30,9 @@ rmb_log_trace <- function(...) {
 #' Pass arguments to logger::log_debug using custom RMassBank-logging settings
 #'
 #' The logging file to be used can be specified by the user in the \code{logging_file} field of \code{settings.ini}
+#' 
+#' @param ... The log message, as for `logger::log_...` functions
+#' 
 #' @seealso logger::log_debug
 #' @author pstahlhofen
 #' @export
@@ -34,6 +43,9 @@ rmb_log_debug <- function(...) {
 #' Pass arguments to logger::log_warn using custom RMassBank-logging settings
 #'
 #' The logging file to be used can be specified by the user in the \code{logging_file} field of \code{settings.ini}
+#' 
+#' @param ... The log message, as for `logger::log_...` functions
+#' 
 #' @seealso logger::log_warn
 #' @author pstahlhofen
 #' @export
@@ -44,6 +56,9 @@ rmb_log_warn <- function(...) {
 #' Pass arguments to logger::log_success using custom RMassBank-logging settings
 #'
 #' The logging file to be used can be specified by the user in the \code{logging_file} field of \code{settings.ini}
+#' 
+#' @param ... The log message, as for `logger::log_...` functions
+#' 
 #' @seealso logger::log_success
 #' @author pstahlhofen
 #' @export
@@ -54,6 +69,9 @@ rmb_log_success <- function(...) {
 #' Pass arguments to logger::log_error using custom RMassBank-logging settings
 #'
 #' The logging file to be used can be specified by the user in the \code{logging_file} field of \code{settings.ini}
+#' 
+#' @param ... The log message, as for `logger::log_...` functions
+#' 
 #' @seealso logger::log_error
 #' @author pstahlhofen
 #' @export
@@ -64,6 +82,9 @@ rmb_log_error <- function(...) {
 #' Pass arguments to logger::log_fatal using custom RMassBank-logging settings
 #'
 #' The logging file to be used can be specified by the user in the \code{logging_file} field of \code{settings.ini}
+#' 
+#' @param ... The log message, as for `logger::log_...` functions
+#' 
 #' @seealso logger::log_fatal
 #' @author pstahlhofen
 #' @export

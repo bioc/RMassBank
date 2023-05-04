@@ -1,4 +1,4 @@
-#' @import MSnbase
+#' @rawNamespace import(MSnbase, except="header")
 #' @importFrom Biobase classVersion
 #' @import S4Vectors
 NULL
@@ -9,12 +9,13 @@ NULL
 #' package and introduces further slots that are used to store information
 #' during the \code{RMassBank} workflow.
 #'
+
 #' @slot satellite logical
 #' If \code{TRUE}, the corresponding peak was removed as satellite.
 #' @slot low logical
 #' If \code{TRUE}, the corresponding peak was removed
 #' because it failed the intensity cutoff.
-#' @slot rawOk logical
+#' @slot rawOK logical
 #' If \code{TRUE}, the peak passed satellite and low-intensity cutoff removal.
 #' @slot good logical
 #' If \code{TRUE}, a formula could be found for the peak
@@ -68,6 +69,11 @@ NULL
 #' \code{noise}, \code{formulaMultiplicity}, \code{bestMultiplicity}
 #' and \code{filterOK}. However, new columns may be added on demand
 #' (see \code{\link{property<-}})
+#' 
+
+
+#' 
+#' 
 #' @seealso \code{\link[rcdk]{generate.formula}}, \code{\link{property<-}}
 #' \code{\link{analyzeMsMs}}, \code{\link{generate.formula}},
 #' \code{\link{is.valid.formula}}
@@ -109,14 +115,35 @@ NULL
 		),
 )
 
+
+#' @title SimpleList specializations
+#' 
+#' @description Typed lists using SimpleList
+#' 
+#' @aliases RmbSpectraSetList
+#' 
 #' @exportClass RmbSpectrum2List
+#' @rdname RmbSpectrum2List
 .RmbSpectrum2List <- setClass("RmbSpectrum2List", contains="SimpleList",
 		prototype=prototype(elementType="RmbSpectrum2"))
-#
-#setAs("ANY", "RmbSpectrum2List", function(from) {
-#			coerceToSimpleList(from)
-#		})
 
+#' Set of spectra pertaining to one compound
+#' 
+#' @slot parent Spectrum1 The precursor spectrum
+#' @slot children RmbSpectrum2List List of `RmbSpectrum2` objects for the fragmentation
+#'  spectra, which are first extracted and later processed during `msmsWorkflow`
+#' @slot found logical, denotes whether or not fragmentation spectra were found for
+#'  this compound
+#' @slot complete logical, denotes whether or not *all* expected collision energies were
+#'  found for this compound
+#' @slot empty logical, `TRUE` if there are zero found spectra for this compound
+#' @slot formula character, the molecular formula of the neutral compound
+#' @slot id The ID of the compound in the RMassBank compound list (see \code{\link{loadList}})
+#' @slot mz the m/z value of the precursor 
+#' @slot name The name of the compound
+#' @slot mode The ion type of the precursor, e.g. `pH, mH, mNa`
+#' @slot smiles the SMILES string for the compound structure
+#' 
 #' @exportClass RmbSpectraSet
 .RmbSpectraSet <- setClass("RmbSpectraSet",
 		representation = representation(
@@ -155,6 +182,7 @@ NULL
 );
 
 #' @exportClass RmbSpectraSetList
+#' @rdname RmbSpectrum2List
 .RmbSpectraSetList <- setClass("RmbSpectraSetList", contains="SimpleList",
 		prototype=prototype(elementType="RmbSpectraSet"))
 
