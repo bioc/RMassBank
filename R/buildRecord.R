@@ -5,6 +5,7 @@
 
 #' @import assertthat
 #' @import glue
+#' @import purrr
 
 
 #' @title Build MassBank records
@@ -406,11 +407,25 @@ setAccessionBuilder <- function(accessionBuilder) {
   variables$collision_energy_raw <- spectrum@collisionEnergy
   variables$metadata <- c(
     spectrum@info$`AC$MASS_SPECTROMETRY`,
-    spectrum@info$`CH$LINK`
+    spectrum@info$`AC$CHROMATOGRAPHY`,
+    spectrum@info$`CH$LINK`,
+    spectrum@info$`MS$FOCUSED_ION`,
+    spectrum@info %>% purrr::discard_at(c(
+      "AC$MASS_SPECTROMETRY",
+      "AC$CHROMATOGRAPHY",
+      "CH$LINK",
+      "MS$FOCUSED_ION",
+      "MS$DATA_PROCESSING"
+      ))
   )
   variables$metadata$INSTRUMENT_TYPE <- spectrum@info$`AC$INSTRUMENT_TYPE`
   variables$metadata$INCHIKEY2D <- substr(spectrum@info$`CH$LINK`$INCHIKEY, 1, 14)
-  variables$info <- function(key) gsub('[^A-Z0-9]', '_', toupper(variables$metadata[[key]]))
+  variables$info <- function(key) gsub('[^A-Z0-9]', '_', toupper(spectrum@info[[key]]))
+  variables$info_hash <- function(key, digits)
+    substr(
+      toupper(digest(variables$info(key), serialize=FALSE)),
+      1, digits
+    )
   variables$mode <- toupper(cpd@mode)
   variables$mode_hash <- substr(toupper(adduct$hash), 1, .adductHashSize)
   # a "MS condition hash" merging instrument type, ionization, collision and CE
