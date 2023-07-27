@@ -48,7 +48,7 @@ loadInfolist <- function(mb, fileName)
   # Prime a new infolist if it doesn't exist
   if(ncol(mb@mbdata_archive) == 0)
     mb <- resetInfolists(mb)
-  mbdata_new <- read.csv(fileName, sep=",", stringsAsFactors=FALSE)
+  mbdata_new <- readr::read_csv(file = fileName, na = "", show_col_types = FALSE)
   # Legacy check for loading the Uchem format files.
   # Even if dbname_* are not used downstream of here, it's still good to keep them
   # for debugging reasons.
@@ -58,7 +58,7 @@ loadInfolist <- function(mb, fileName)
   # Check if comma-separated or semicolon-separated
   d <- setdiff(cols, n)
   if(length(d)>0){
-		mbdata_new <- read.csv2(fileName, stringsAsFactors=FALSE)
+		mbdata_new <- readr::read_delim(file = fileName, na = "", delim = ";", show_col_types = FALSE)
 		n <- colnames(mbdata_new)
 		d2 <- setdiff(cols, n)
 		if(length(d2) > 0){
@@ -237,7 +237,7 @@ mbWorkflow <- function(mb, steps=c(1,2,3,4,5,6,7,8), infolist_path="./infolist.c
     if(length(mb@mbdata)>0)
     {
       mbdata_mat <- flatten(mb@mbdata)
-      write.csv(as.data.frame(mbdata_mat),infolist_path, na="")
+      readr::write_csv(x = as.data.frame(mbdata_mat), file = infolist_path, col_names = TRUE, na = "")
             rmb_log_info(paste("The file", infolist_path, "was generated with new compound information. Please check and edit the table, and add it to your infolist folder."))
       return(mb)
     }
@@ -1800,7 +1800,7 @@ addPeaks <- function(mb, filename_or_dataframe)
 		df <- filename_or_dataframe
 	else
 	tryCatch(
-		df <- read.csv(filename_or_dataframe),
+		df <- readr::read_csv(filename_or_dataframe),
 		error=function(e){
 		currEnvir$errorvar <- 1
 	})
@@ -1809,7 +1809,7 @@ addPeaks <- function(mb, filename_or_dataframe)
 	if(!errorvar){
 	
 		if(ncol(df) < 2)
-			df <- read.csv(filename_or_dataframe, sep=";")
+			df <- readr::read_delim(file = filename_or_dataframe, delim = ";")
 		# here: the column int was renamed to intensity, and we need to be able to read old files. sorry.
 		if(!("intensity" %in% colnames(df)) & ("int" %in% colnames(df)))
 			df$intensity <- df$int

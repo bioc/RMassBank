@@ -2,6 +2,7 @@
 #'   packageVersion read.csv read.csv2
 #'   setTxtProgressBar str txtProgressBar type.convert write.csv write.table
 #' @import digest
+#' @import readr
 # Auxiliary for getSplash.R so we can use the original file and don't have to change anything there
 
 .onLoad <- function(libname, pkgname) {
