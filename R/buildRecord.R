@@ -408,7 +408,7 @@ setAccessionBuilder <- function(accessionBuilder) {
     spectrum@info$`AC$CHROMATOGRAPHY`,
     spectrum@info$`CH$LINK`,
     spectrum@info$`MS$FOCUSED_ION`,
-    spectrum@info %>% purrr::discard_at(c(
+    purrr::discard_at(spectrum@info, c(
       "AC$MASS_SPECTROMETRY",
       "AC$CHROMATOGRAPHY",
       "CH$LINK",
