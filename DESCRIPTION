@@ -35,7 +35,8 @@ Imports:
     XML,rjson,S4Vectors,digest,
     rcdk,yaml,mzR,methods,Biobase,MSnbase,httr,
     enviPat,assertthat,logger,readJDX,webchem,
-    ChemmineR,ChemmineOB,R.utils,data.table,glue
+    ChemmineR,ChemmineOB,R.utils,data.table,glue,
+    purrr
 Suggests:
     BiocStyle,gplots,RMassBankData (>= 1.33.1),
     xcms (>= 1.37.1),
