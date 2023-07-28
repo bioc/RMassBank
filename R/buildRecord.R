@@ -5,8 +5,6 @@
 
 #' @import assertthat
 #' @import glue
-#' @import purrr
-
 
 #' @title Build MassBank records
 #' 
