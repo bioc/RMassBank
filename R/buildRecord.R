@@ -311,7 +311,7 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	   ("accessionBuilder" %in% names(userSettings)))
 	{
 	  if(is.function(userSettings$accessionBuilder)) {
-	    assertthat::assertthat::assert_that(assertthat::has_args(userSettings$accessionBuilder,
+	    assertthat::assert_that(assertthat::has_args(userSettings$accessionBuilder,
 	                         c('cpd', 'spectrum', 'subscan'), exact=TRUE),
 	                msg=paste('accessionBuilder must have function arguments',
 	                          'cpd, spectrum, subscan in this order'))
