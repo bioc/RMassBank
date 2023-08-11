@@ -3,7 +3,9 @@
 #'   setTxtProgressBar str txtProgressBar type.convert write.csv write.table
 #' @import digest
 #' @import readr
+#' @importFrom assertthat assert_that has_args
 #' @import tibble
+
 
 # Auxiliary for getSplash.R so we can use the original file and don't have to change anything there
 
