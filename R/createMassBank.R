@@ -22,7 +22,7 @@
 #' @param fileName A single namelist to be loaded.
 #' @param mb The \code{mbWorkspace} to load/reset the lists in.
 #' @return The new workspace with loaded/reset lists.
-#' @author Michael Stravs
+#' @author Michael Stravs, Tobias Schulze
 #' @examples
 #' 
 #' #
@@ -46,9 +46,18 @@ loadInfolists <- function(mb, path)
 loadInfolist <- function(mb, fileName)
 {
   # Prime a new infolist if it doesn't exist
-  if(ncol(mb@mbdata_archive) == 0)
+  if(ncol(mb@mbdata_archive) == 0) {
     mb <- resetInfolists(mb)
-  mbdata_new <- readr::read_csv(file = fileName, na = "", show_col_types = FALSE)
+  }
+  
+  # Import infolist, trim whitespace and transform NAs
+  mbdata_new <- readr::read_csv(file = fileName,
+                                na = "",
+                                trim_ws = TRUE,
+                                show_col_types = FALSE
+                                )
+  mbdata_new <- as.data.frame(mbdata_new, stringsAsFactors = FALSE)
+  
   # Legacy check for loading the Uchem format files.
   # Even if dbname_* are not used downstream of here, it's still good to keep them
   # for debugging reasons.
@@ -58,59 +67,66 @@ loadInfolist <- function(mb, fileName)
   # Check if comma-separated or semicolon-separated
   d <- setdiff(cols, n)
   if(length(d)>0){
-		mbdata_new <- readr::read_delim(file = fileName, na = "", delim = ";", show_col_types = FALSE)
+    
+  # Import infolist, trim whitespace and transform NAs
+    mbdata_new <- readr::read_delim(file = fileName,
+                                  delim = ";",
+                                  na = "",
+                                  trim_ws = TRUE,
+                                  show_col_types = FALSE
+                                  )
+    
+		mbdata_new <- as.data.frame(mbdata_new, stringsAsFactors = FALSE)
+		
 		n <- colnames(mbdata_new)
 		d2 <- setdiff(cols, n)
-		if(length(d2) > 0){
+				if(length(d2) > 0){
 			stop("Some columns are missing in the infolist.")
 		}
-	}
-  if("dbname_d" %in% colnames(mbdata_new))
-  {
+  }
+  
+  if("dbname_d" %in% colnames(mbdata_new)) {
     colnames(mbdata_new)[[which(colnames(mbdata_new)=="dbname_d")]] <- "dbname"
     # dbname_e will be dropped because of the select= in the subset below.
   }
-  if("COMMENT.EAWAG_UCHEM_ID" %in% colnames(mbdata_new))
+  
+  if("COMMENT.EAWAG_UCHEM_ID" %in% colnames(mbdata_new)) {
     colnames(mbdata_new)[[which(colnames(mbdata_new)== "COMMENT.EAWAG_UCHEM_ID")]] <-
       "COMMENT.ID"
+  }
   
-  # Clear from padding spaces and NAs
-  mbdata_new <- as.data.frame(x = t(apply(mbdata_new, 1, function(r) 
-    {
-    # Substitute empty spaces by real NA values
-    r[which(r == "")] <- NA
-    # Trim spaces (in all non-NA fields)
-    r[which(!is.na(r))] <- sub(pattern = "^ *([^ ]+) *$", replacement = "\\1", x = r[which(!is.na(r))])
-    return(r)
-  })), stringsAsFactors = FALSE)
   # use only the columns present in mbdata_archive, no other columns added in excel
-  colNames <- colnames(mb@mbdata_archive)
-  commentColNames <- colnames(mbdata_new)[grepl(x = colnames(mbdata_new), pattern = "^COMMENT\\.(?!CONFIDENCE)(?!ID)", perl = TRUE)]
-  colNames <- c(colNames, commentColNames)
+  col_names <- colnames(mb@mbdata_archive)
+  comment_colnames <- colnames(mbdata_new)[grepl(x = colnames(mbdata_new), pattern = "^COMMENT\\.(?!CONFIDENCE)(?!ID)", perl = TRUE)]
+  col_names <- c(col_names, comment_colnames)
 
   ## The read infolists might not have all required / expected columns
-  missingColNames <- colNames[! colNames %in% colnames(mbdata_new)]
-  if (length(missingColNames >0)) {
-    missingCols <- matrix(NA, ncol=length(missingColNames))
-    colnames(missingCols) <- missingColNames
-    mbdata_new <- cbind(mbdata_new, missingCols)
+  missing_colnames <- col_names[!col_names %in% colnames(mbdata_new)]
+  if (length(missing_colnames >0)) {
+    missing_cols <- matrix(NA, ncol=length(missing_colnames))
+    colnames(missing_cols) <- missing_colnames
+    mbdata_new <- cbind(mbdata_new, missing_cols)
   }
-    
-  mbdata_new <- mbdata_new[, colNames]
+  
+  mbdata_new <- mbdata_new[, col_names]
   # substitute the old entires with the ones from our files
   # then find the new (previously inexistent) entries, and rbind them to the table
   new_entries <- setdiff(mbdata_new$id, mb@mbdata_archive$id)
   old_entries <- intersect(mbdata_new$id, mb@mbdata_archive$id)
   
-  for(colname in colnames(mb@mbdata_archive))
+  for(colname in colnames(mb@mbdata_archive)) {
     mb@mbdata_archive[, colname] <- as.character(mb@mbdata_archive[, colname])
-  
-  for(entry in old_entries)
+  }
+    
+  for(entry in old_entries) {
     mb@mbdata_archive[mb@mbdata_archive$id == entry,] <- mbdata_new[mbdata_new$id == entry,]
+  }
+ 
   mb@mbdata_archive <- rbind(mb@mbdata_archive, mbdata_new[mbdata_new$id==new_entries,])
-  
-  for(colname in colnames(mb@mbdata_archive))
+    
+  for(colname in colnames(mb@mbdata_archive)) {
     mb@mbdata_archive[, colname] <- as.factor(mb@mbdata_archive[, colname])
+  }
   
   return(mb)
 }
@@ -121,26 +137,27 @@ loadInfolist <- function(mb, fileName)
 resetInfolists <- function(mb) 
 {    
 	mb@mbdata_archive <-
-			structure(list(X = integer(0), id = integer(0), dbcas = character(0), 
+			structure(list(id = integer(0), dbcas = character(0), 
 							dbname = character(0), dataused = character(0), COMMENT.CONFIDENCE = character(0), 
-							COMMENT.ID = integer(0), CH.NAME1 = character(0), 
-							CH.NAME2 = character(0), CH.NAME3 = character(0), CH.NAME4 = character(0), CH.NAME5 = character(0), CH.COMPOUND_CLASS = character(0), 
-							CH.FORMULA = character(0), CH.EXACT_MASS = numeric(0), CH.SMILES = character(0), 
-							CH.IUPAC = character(0), CH.LINK.CAS = character(0), CH.LINK.CHEBI = integer(0), 
-							CH.LINK.HMDB = character(0), CH.LINK.KEGG = character(0), CH.LINK.LIPIDMAPS = character(0), 
-							CH.LINK.PUBCHEM = character(0), CH.LINK.INCHIKEY = character(0), 
-							CH.LINK.CHEMSPIDER = integer(0), CH.LINK.COMPTOX = character(0), 
+							COMMENT.ID = integer(0), `CH$NAME1` = character(0), 
+							`CH$NAME2` = character(0), `CH$NAME3` = character(0), `CH$NAME4` = character(0),
+							`CH$NAME5` = character(0), `CH$COMPOUND_CLASS` = character(0), 
+							`CH$FORMULA` = character(0), `CH$EXACT_MASS` = numeric(0),` CH$SMILES` = character(0), 
+							`CH$IUPAC` = character(0), `CH$LINK_CAS` = character(0), `CH$LINK_CHEBI` = integer(0), 
+							`CH$LINK_HMDB` = character(0), `CH$LINK_KEGG` = character(0), `CH$LINK_LIPIDMAPS` = character(0), 
+							`CH$LINK_PUBCHEM` = character(0), `CH$LINK_INCHIKEY` = character(0), 
+							`CH$LINK_CHEMSPIDER` = integer(0), `CH$LINK_COMPTOX` = character(0), 
 							AUTHORS = character(0), COPYRIGHT = character(0)
-							), .Names = c("X", "id", "dbcas", 
+							), .Names = c("id", "dbcas", 
 							"dbname", "dataused", "COMMENT.CONFIDENCE", "COMMENT.ID", 
-              "CH.NAME1", "CH.NAME2", "CH.NAME3", "CH.NAME4", "CH.NAME5", "CH.COMPOUND_CLASS", "CH.FORMULA", 
-							"CH.EXACT_MASS", "CH.SMILES", "CH.IUPAC", "CH.LINK.CAS", "CH.LINK.CHEBI", 
-							"CH.LINK.HMDB", "CH.LINK.KEGG", "CH.LINK.LIPIDMAPS", "CH.LINK.PUBCHEM",
-							"CH.LINK.INCHIKEY", "CH.LINK.CHEMSPIDER", "CH.LINK.COMPTOX", 
+              "CH$NAME1", "CH$NAME2", "CH$NAME3", "CH$NAME4", "CH$NAME5", "CH$COMPOUND_CLASS", "CH$FORMULA", 
+							"CH$EXACT_MASS", "CH$SMILES", "CH$IUPAC", "CH$LINK_CAS", "CH$LINK_CHEBI", 
+							"CH$LINK_HMDB", "CH$LINK_KEGG", "CH$LINK_LIPIDMAPS", "CH$LINK_PUBCHEM",
+							"CH$LINK_INCHIKEY", "CH$LINK_CHEMSPIDER", "CH$LINK_COMPTOX", 
 							"AUTHORS", "COPYRIGHT"), row.names = integer(0), class = "data.frame")
 	if(getOption("RMassBank")$include_sp_tags)
 	{
-	  mb@mbdata_archive["SP.SAMPLE"] <- character(0)
+	  mb@mbdata_archive["SP$SAMPLE"] <- character(0)
 	}
 	return(mb)
 	
@@ -213,7 +230,7 @@ mbWorkflow <- function(mb, steps=c(1,2,3,4,5,6,7,8), infolist_path="./infolist.c
       new_ids <- setdiff(as.numeric(unlist(mbdata_ids)), mb@mbdata_archive$id)
       mb@mbdata <- lapply(new_ids, function(id) 
       {
-            if(findLevel(id,TRUE) == "standard"){
+            if(findLevel(id, TRUE) == "standard"){
             if(gatherData == "online"){
                     
                 d <- gatherData(id)
@@ -224,9 +241,9 @@ mbWorkflow <- function(mb, steps=c(1,2,3,4,5,6,7,8), infolist_path="./infolist.c
             }
         } else{
                 # message("mbWorkflow: Step 1. Gather no info - Unknown structure")
-                d <- gatherDataUnknown(id, mb@spectra[[1]]@mode, retrieval=findLevel(id,TRUE))
+                d <- gatherDataUnknown(id, mb@spectra[[1]]@mode, retrieval = findLevel(id, TRUE))
         }
-		rmb_log_info(paste(id, ": ", d$dataused, sep=''))
+		rmb_log_info(paste(id, ": ", d$dataused, sep = ''))
         return(d)
       })
   }
@@ -237,8 +254,8 @@ mbWorkflow <- function(mb, steps=c(1,2,3,4,5,6,7,8), infolist_path="./infolist.c
 	rmb_log_info("mbWorkflow: Step 2. Export infolist (if required)")
     if(length(mb@mbdata)>0)
     {
-      mbdata_mat <- flatten(mb@mbdata)
-      readr::write_csv(x = as.data.frame(mbdata_mat), file = infolist_path, col_names = TRUE, na = "")
+      mbdata <- tibble::as_tibble(flatten(mb@mbdata))
+      readr::write_csv(x = mbdata, file = infolist_path, col_names = TRUE, na = "", quote = "needed")
             rmb_log_info(paste("The file", infolist_path, "was generated with new compound information. Please check and edit the table, and add it to your infolist folder."))
       return(mb)
     }
@@ -1152,15 +1169,15 @@ flatten <- function(mbdata)
               "CH$EXACT_MASS",
               "CH$SMILES",
               "CH$IUPAC",
-              "CH$LINK.CAS",
-              "CH$LINK.CHEBI",
-              "CH$LINK.HMDB",
-              "CH$LINK.KEGG",
-              "CH$LINK.LIPIDMAPS",
-              "CH$LINK.PUBCHEM",
-              "CH$LINK.INCHIKEY",
-              "CH$LINK.CHEMSPIDER",
-	          "CH$LINK.COMPTOX"
+              "CH$LINK_CAS",
+              "CH$LINK_CHEBI",
+              "CH$LINK_HMDB",
+              "CH$LINK_KEGG",
+              "CH$LINK_LIPIDMAPS",
+              "CH$LINK_PUBCHEM",
+              "CH$LINK_INCHIKEY",
+              "CH$LINK_CHEMSPIDER",
+	          "CH$LINK_COMPTOX"
 	          )
   # make an empty data frame with the right length
   rows <- length(mbdata)
@@ -1226,42 +1243,42 @@ readMbdata <- function(row)
               "CH$EXACT_MASS",
               "CH$SMILES",
               "CH$IUPAC",
-              "CH$LINK.CAS",
-              "CH$LINK.CHEBI",
-              "CH$LINK.HMDB",
-              "CH$LINK.KEGG",
-              "CH$LINK.LIPIDMAPS",
-              "CH$LINK.PUBCHEM",
-              "CH$LINK.INCHIKEY",
-              "CH$LINK.CHEMSPIDER",
-              "CH$LINK.COMPTOX")
+              "CH$LINK_CAS",
+              "CH$LINK_CHEBI",
+              "CH$LINK_HMDB",
+              "CH$LINK_KEGG",
+              "CH$LINK_LIPIDMAPS",
+              "CH$LINK_PUBCHEM",
+              "CH$LINK_INCHIKEY",
+              "CH$LINK_CHEMSPIDER",
+              "CH$LINK_COMPTOX")
   mbdata[["COMMENT"]] = list()
   #mbdata[["COMMENT"]][["CONFIDENCE"]] <- row[["COMMENT.CONFIDENCE"]]
   # Again, our ID field. 
   #mbdata[["COMMENT"]][["ID"]] <- row[["COMMENT.ID"]]
   mbdata[["COMMENT"]][gsub(x = commentNames, pattern = "^COMMENT\\.", replacement = "")] <- row[commentNames]
   
-  names = c(row[["CH.NAME1"]], row[["CH.NAME2"]], row[["CH.NAME3"]], row[["CH.NAME4"]], row[["CH.NAME5"]])
+  names = c(row[["CH$NAME1"]], row[["CH$NAME2"]], row[["CH$NAME3"]], row[["CH$NAME4"]], row[["CH$NAME5"]])
   names = names[which(!is.na(names))]
   
   names <- gsub("'", "`", names) 
   mbdata[["CH$NAME"]] = names
-  mbdata[["CH$COMPOUND_CLASS"]] = row[["CH.COMPOUND_CLASS"]]
-  mbdata[["CH$FORMULA"]] = row[["CH.FORMULA"]]
-  mbdata[["CH$EXACT_MASS"]] = row[["CH.EXACT_MASS"]]
-  mbdata[["CH$SMILES"]] = row[["CH.SMILES"]]
-  mbdata[["CH$IUPAC"]] = row[["CH.IUPAC"]]
+  mbdata[["CH$COMPOUND_CLASS"]] = row[["CH$COMPOUND_CLASS"]]
+  mbdata[["CH$FORMULA"]] = row[["CH$FORMULA"]]
+  mbdata[["CH$EXACT_MASS"]] = row[["CH$EXACT_MASS"]]
+  mbdata[["CH$SMILES"]] = row[["CH$SMILES"]]
+  mbdata[["CH$IUPAC"]] = row[["CH$IUPAC"]]
   # Add all links and then eliminate the NA values from the tree.
   link = list()
-  link[["CAS"]] = row[["CH.LINK.CAS"]]
-  link[["CHEBI"]] = row[["CH.LINK.CHEBI"]]
-  link[["HMDB"]] = row[["CH.LINK.HMDB"]]
-  link[["KEGG"]] = row[["CH.LINK.KEGG"]]
-  link[["LIPIDMAPS"]] = row[["CH.LINK.LIPIDMAPS"]]
-  link[["PUBCHEM"]] = row[["CH.LINK.PUBCHEM"]]
-  link[["INCHIKEY"]] = row[["CH.LINK.INCHIKEY"]]
-  link[["CHEMSPIDER"]] = row[["CH.LINK.CHEMSPIDER"]]
-  link[["COMPTOX"]] = row[["CH.LINK.COMPTOX"]]
+  link[["CAS"]] = row[["CH$LINK_CAS"]]
+  link[["CHEBI"]] = row[["CH$LINK_CHEBI"]]
+  link[["HMDB"]] = row[["CH$LINK_HMDB"]]
+  link[["KEGG"]] = row[["CH$LINK_KEGG"]]
+  link[["LIPIDMAPS"]] = row[["CH$LINK_LIPIDMAPS"]]
+  link[["PUBCHEM"]] = row[["CH$LINK_PUBCHEM"]]
+  link[["INCHIKEY"]] = row[["CH$LINK_INCHIKEY"]]
+  link[["CHEMSPIDER"]] = row[["CH$LINK_CHEMSPIDER"]]
+  link[["COMPTOX"]] = row[["CH$LINK_COMPTOX"]]
   link[which(is.na(link))] <- NULL
   mbdata[["CH$LINK"]] <- link
 
@@ -1805,6 +1822,7 @@ addPeaks <- function(mb, filename_or_dataframe)
 	else
 	tryCatch(
 		df <- readr::read_csv(filename_or_dataframe),
+		df <- as.data.frame(df),
 		error=function(e){
 		currEnvir$errorvar <- 1
 	})
@@ -1812,8 +1830,10 @@ addPeaks <- function(mb, filename_or_dataframe)
 	
 	if(!errorvar){
 	
-		if(ncol(df) < 2)
+		if(ncol(df) < 2){
 			df <- readr::read_delim(file = filename_or_dataframe, delim = ";")
+			df <- as.data.frame(df)
+		}
 		# here: the column int was renamed to intensity, and we need to be able to read old files. sorry.
 		if(!("intensity" %in% colnames(df)) & ("int" %in% colnames(df)))
 			df$intensity <- df$int

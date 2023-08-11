@@ -3,7 +3,7 @@
 # Author: stravsmi
 ###############################################################################
 
-#' @import assertthat
+#' @importFrom assertthat has_args assert_that
 #' @import glue
 
 
@@ -316,7 +316,7 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	   ("accessionBuilder" %in% names(userSettings)))
 	{
 	  if(is.function(userSettings$accessionBuilder)) {
-	    assert_that(has_args(userSettings$accessionBuilder,
+	    atterthat::assert_that(attertthat::has_args(userSettings$accessionBuilder,
 	                         c('cpd', 'spectrum', 'subscan'), exact=TRUE),
 	                msg=paste('accessionBuilder must have function arguments',
 	                          'cpd, spectrum, subscan in this order'))
@@ -332,7 +332,7 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	else if("accessionBuilderType" %in% names(userSettings)) {
 	  # Use 'simple', 'standard' or 'selfDefined' accessionBuilder
 	  # depending on user input
-		assert_that(userSettings$accessionBuilder %in% c(
+	  atterthat::assert_that(userSettings$accessionBuilder %in% c(
 		  "standard", "simple", "selfDefined"),
 		  msg=paste("accessionNumberType must be one of",
 		  "'standard', 'simple', 'selfDefined'"))
@@ -349,7 +349,7 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	}
 	
 	if(userSettings$accessionValidate) {
-	  assert_that(
+	  assertthat::assert_that(
 	    .accessionValidate(mbdata[['ACCESSION']]),
 	    msg = "Generated ACCESSION is invalid. You may bypass validity check with `accessionValidate: FALSE` in the RMassBank settings file."
 	  )
@@ -376,9 +376,9 @@ setAccessionBuilder <- function(accessionBuilder) {
   if(is.character(accessionBuilder))
     userSettings$accessionBuilder <- accessionBuilder
   else {
-    assert_that(class(accessionBuilder)=='function',
+    atterthat::assert_that(class(accessionBuilder)=='function',
                 msg='accessionBuilder must be a function')
-    assert_that(has_args(accessionBuilder,
+    atterthat::assert_that(atterthat::has_args(accessionBuilder,
                          c('cpd', 'spectrum', 'subscan'), exact=TRUE),
                 msg=paste('accessionBuilder must have function arguments',
                           'cpd, spectrum, subscan in this order'))
@@ -434,7 +434,7 @@ setAccessionBuilder <- function(accessionBuilder) {
 .simpleAccessionBuilder <- function(cpd, spectrum, subscan)
 {
 	userSettings = getOption("RMassBank")
-	assert_that('accessionNumberStart' %in% names(userSettings),
+	atterthat::assert_that('accessionNumberStart' %in% names(userSettings),
 	  msg=paste("accessionBuilderType is 'simple', but",
 	  "accessionNumberStart is not provided.",
 	  "You may set the value of accessionBuilderType to",
@@ -462,7 +462,7 @@ setAccessionBuilder <- function(accessionBuilder) {
 {
 	#This is a wrapper for the user-defined accessionBuilder
 	userSettings = getOption("RMassBank")
-	assert_that("accessionBuilderFile" %in% names(userSettings),
+	atterthat::assert_that("accessionBuilderFile" %in% names(userSettings),
 	  msg=paste("accessionBuilderType is 'selfDefined', but",
 	  "accessionBuilderFile is not provided.",
 	  "You may set the value of accessionBuilderType",
@@ -473,12 +473,12 @@ setAccessionBuilder <- function(accessionBuilder) {
 	source(userSettings$accessionBuilderFile)
 	#The file must contain a function called 'accessionBuilder'
 	#with arguments cpd, spectrum, subscan
-	assert_that(exists("accessionBuilder"),
+	assertthat::assert_that(exists("accessionBuilder"),
 	  msg=paste('No accessionBuilder defined in',
 	  userSettings$accessionBuilderFile))
-	assert_that(class(accessionBuilder)=='function',
+	assertthat::assert_that(class(accessionBuilder)=='function',
 	  msg='accessionBuilder must be a function')
-	assert_that(has_args(accessionBuilder,
+	assertthat::assert_that(assertthat::has_args(accessionBuilder,
 	  c('cpd', 'spectrum', 'subscan'), exact=TRUE),
 	  msg=paste('accessionBuilder must have function arguments',
 	  'cpd, spectrum, subscan in this order'))

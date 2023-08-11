@@ -41,5 +41,5 @@ file, whereas \code{loadInfolists} loads a whole directory.
 
 }
 \author{
-Michael Stravs
+Michael Stravs, Tobias Schulze
 }

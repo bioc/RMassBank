@@ -135,6 +135,9 @@ setIs("msmsWorkspace", "msmsWorkspaceOrNULL")
 #' @author Michael Stravs, Eawag <michael.stravs@@eawag.ch>
 #' @name mbWorkspace-class
 #' @exportClass mbWorkspace
+#' 
+setOldClass(c("tbl_df", "tbl", "data.frame"))
+
 setClass("mbWorkspace",
 		representation(
 				# input data:
