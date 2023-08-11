@@ -36,7 +36,7 @@ Imports:
     rcdk,yaml,mzR,methods,Biobase,MSnbase,httr,
     enviPat,assertthat,logger,readJDX,webchem,
     ChemmineR,ChemmineOB,R.utils,data.table,glue,
-    readr
+    readr, purrr, tibble
 Suggests:
     BiocStyle,gplots,RMassBankData (>= 1.33.1),
     xcms (>= 1.37.1),
