@@ -43,7 +43,8 @@ Suggests:
     CAMERA,
     RUnit,
     knitr,
-    rmarkdown
+    rmarkdown,
+    magick
 Collate:
     'alternateAnalyze.R'
     'formulaCalculator.R'
