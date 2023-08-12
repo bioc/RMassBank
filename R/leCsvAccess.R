@@ -41,16 +41,30 @@ loadList <- function(path, listEnv = NULL, check = TRUE)
   		stop("The supplied file does not exist, please supply a correct path")
           
     # Try out if the file is comma- or semicolon-separated
-    compoundList <- read.csv(path, stringsAsFactors=FALSE, check.names=FALSE)
+    compoundList <- readr::read_csv(file = path,
+                                  na = "",
+                                  trim_ws = TRUE,
+                                  show_col_types = FALSE
+    )
+    
+    
   	n <- colnames(compoundList)
     if(!("ID" %in% n)){ # If no ID column, it must be semicolon separated
-        compoundList <- read.csv2(path, stringsAsFactors=FALSE, check.names=FALSE)
+      compoundList <- readr::read_delim(file = path,
+                                      delim = ";",
+                                      na = "",
+                                      trim_ws = TRUE,
+                                      show_col_types = FALSE
+        )
+      
         n <- colnames(compoundList)
         if(!("ID" %in% n)){ # ...or there must be something wrong with the column names
              stop("There is no 'ID' column in the compound list")
         }
     }
     
+  	compoundList <- as.data.frame(compoundList, stringsAsFactors = FALSE)
+  	
     # Now everything should be fine, at least regarding csv and ssv
     
     # Are there duplicate compound IDs? 
