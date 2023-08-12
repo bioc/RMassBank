@@ -8,7 +8,6 @@
 #' @import glue
 #' @import httr
 #' @import logger
-#' @import methods
 #' @import MSnbase
 #' @import mzR
 #' @import rcdk
