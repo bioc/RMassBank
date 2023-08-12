@@ -1,6 +1,3 @@
-#' @import digest
-
-
 .listEnvEnv <- new.env()
 assign("listEnv", NULL, envir=.listEnvEnv)
 

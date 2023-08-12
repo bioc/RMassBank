@@ -1,15 +1,32 @@
-#' @importFrom utils URLencode capture.output data flush.console 
-#'   packageVersion read.csv read.csv2
-#'   setTxtProgressBar str txtProgressBar type.convert write.csv write.table
-#' @import digest
-#' @import readr
+# Central import section
+
 #' @importFrom assertthat assert_that has_args
-#' @import tibble
+#' @importFrom Biobase isVersioned isCurrent classVersion<- classVersion
+#' @importFrom ChemmineR smiles2sdf validSDF write.SDF
+#' @importFrom data.table fread fwrite
+#' @import digest
 #' @import glue
-#' @importFrom MSnbase writeMgfData
+#' @import httr
+#' @import logger
+#' @import methods
+#' @import MSnbase
+#' @import mzR
+#' @import rcdk
+#' @import Rcpp
+#' @import readJDX
+#' @import readr
+#' @import rjson
+#' @importFrom stats lm loess median predict smooth.spline
+#' @import S4Vectors
+#' @import tibble
+#' @importFrom utils URLencode capture.output data flush.console 
+#' @importFrom utils packageVersion read.csv read.csv2 setTxtProgressBar
+#' @importFrom utils str txtProgressBar type.convert write.csv write.table
+#' @importFrom utils globalVariables
+#' @importFrom webchem cir_query
+#' @import XML
+#' @import yaml
 
-
-# Auxiliary for getSplash.R so we can use the original file and don't have to change anything there
 
 .onLoad <- function(libname, pkgname) {
   RMassBank.env <<- new.env()

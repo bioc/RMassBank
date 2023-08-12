@@ -1,6 +1,3 @@
-#' @import yaml
-NULL
-
 .checkMbSettings <- function()
 {
 	o <- getOption("RMassBank", NULL)

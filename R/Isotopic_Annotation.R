@@ -201,7 +201,6 @@ checkIsotopes <- function(w, mode = "pH", intensity_cutoff = 0, intensity_precis
 
 # Pattern finding and evaluation of these patterns inside the checkIsotopes function harmed readability and complicated debugging
 # So modularize this function
-#' @importFrom utils capture.output
 .findPattern <- function(aggregateRow, defIsotopes, intensity_cutoff, precisionVal, ppmlimit, isolationWindow){
 	
 	# Find pattern and mass

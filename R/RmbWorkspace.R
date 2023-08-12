@@ -1,10 +1,3 @@
-#' @import methods
-#' @importFrom Biobase isVersioned
-#' @importFrom Biobase isCurrent
-#' @importFrom Biobase classVersion<-
-NULL
-
-
 setClassUnion("msmsWorkspaceOrNULL", "NULL")
 
 #' Workspace for \code{msmsWorkflow} data

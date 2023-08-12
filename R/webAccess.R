@@ -1,10 +1,3 @@
-#' @import XML rjson httr
-NULL
-## library(XML)
-## library(httr)
-## library(jsonlite)
-
-
 retrieveDataWithRetry <- function(url, timeout, maximumNumberOfRetries = 5, retryDelayInSeconds = 3){
 
   data <- NULL

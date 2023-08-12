@@ -1,6 +1,3 @@
-#' @import logger
-NULL
-
 #' Pass arguments to logger::log_info using custom RMassBank-logging settings
 #'
 #' The logging file to be used can be specified by the user in the \code{logging_file} field of \code{settings.ini}
