@@ -5,6 +5,7 @@
 #' @import readr
 #' @importFrom assertthat assert_that has_args
 #' @import tibble
+#' @import glue
 
 
 # Auxiliary for getSplash.R so we can use the original file and don't have to change anything there
