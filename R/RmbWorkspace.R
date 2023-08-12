@@ -1,3 +1,6 @@
+#' @import methods
+NULL
+
 setClassUnion("msmsWorkspaceOrNULL", "NULL")
 
 #' Workspace for \code{msmsWorkflow} data
