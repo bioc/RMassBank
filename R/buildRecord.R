@@ -284,10 +284,10 @@ setMethod("buildRecord", "RmbSpectrum2", function(o, ..., cpd = NULL, mbdata = l
 	# Here is the right place to fix the name of the INTERNAL ID field.
 	if(!is.null(getOption("RMassBank")$annotations$internal_id_fieldname))
 	{
-		id.col <- which(names(mbdata[["COMMENT"]]) == "ID")
-		if(length(id.col) > 0)
+		id_col <- which(names(mbdata[["COMMENT"]]) == "ID")
+		if(length(id_col) > 0)
 		{
-			names(mbdata[["COMMENT"]])[[id.col]] <-
+			names(mbdata[["COMMENT"]])[[id_col]] <-
 			getOption("RMassBank")$annotations$internal_id_fieldname
 		}
 	}

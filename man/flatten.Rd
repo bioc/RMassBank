@@ -17,7 +17,7 @@ readMbdata(row)
 infolist.}
 }
 \value{
-\code{flatten} returns a matrix (not a data frame) to be written to
+\code{flatten} returns a tibble (not a data frame or matrix) to be written to
 CSV.
 
 \code{readMbdata} returns a list of type \code{list(id= \var{compoundID},

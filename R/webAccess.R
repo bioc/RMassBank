@@ -72,7 +72,7 @@ retrieveDataWithRetry <- function(url, timeout, maximumNumberOfRetries = 5, retr
 #' @export 
 #' 
 #' 
-getCactus <- function(identifier,representation){
+getCactus <- function(identifier, representation){
   identifier <- gsub('#', '%23', identifier)
   ret <- tryCatch(httr::GET(paste("https://cactus.nci.nih.gov/chemical/structure/",
                             utils::URLencode(identifier), "/", representation, sep = "")),
@@ -511,12 +511,12 @@ getPcIUPAC <- function (query, from = "inchikey")
 getPcInchiKey <- function(query, from = "smiles"){
 	# Get the JSON-Data from Pubchem
 	baseURL <- "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound"
-	url <- paste(baseURL, from, query, "record", "json", sep="/")
+	url <- paste(baseURL, from, query, "json", sep="/")
 	errorvar <- 0
 	currEnvir <- environment()
 	
 	tryCatch({
-		  res <- GET(utils::URLencode(url))
+		  res <- httr::GET(utils::URLencode(url))
 		  data <- httr::content(res, type="text", encoding="UTF-8")
 		},
 		error=function(e){
@@ -527,7 +527,7 @@ getPcInchiKey <- function(query, from = "smiles"){
 		return(NA)
 	}
 	
-	r <- fromJSON(data)
+	r <- rjson::fromJSON(data)
 	
 	# This happens if the InChI key is not found:
 	if(!is.null(r$Fault))

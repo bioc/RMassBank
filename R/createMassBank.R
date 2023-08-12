@@ -90,14 +90,14 @@ loadInfolist <- function(mb, fileName)
     # dbname_e will be dropped because of the select= in the subset below.
   }
   
-  if("COMMENT.EAWAG_UCHEM_ID" %in% colnames(mbdata_new)) {
-    colnames(mbdata_new)[[which(colnames(mbdata_new)== "COMMENT.EAWAG_UCHEM_ID")]] <-
-      "COMMENT.ID"
+  if("COMMENT_EAWAG_UCHEM_ID" %in% colnames(mbdata_new)) {
+    colnames(mbdata_new)[[which(colnames(mbdata_new) == "COMMENT_EAWAG_UCHEM_ID")]] <-
+      "COMMENT_ID"
   }
   
   # use only the columns present in mbdata_archive, no other columns added in excel
   col_names <- colnames(mb@mbdata_archive)
-  comment_colnames <- colnames(mbdata_new)[grepl(x = colnames(mbdata_new), pattern = "^COMMENT\\.(?!CONFIDENCE)(?!ID)", perl = TRUE)]
+  comment_colnames <- colnames(mbdata_new)[grepl(x = colnames(mbdata_new), pattern = "^COMMENT\\_(?!CONFIDENCE)(?!ID)", perl = TRUE)]
   col_names <- c(col_names, comment_colnames)
 
   ## The read infolists might not have all required / expected columns
@@ -138,8 +138,8 @@ resetInfolists <- function(mb)
 {    
 	mb@mbdata_archive <-
 			structure(list(id = integer(0), dbcas = character(0), 
-							dbname = character(0), dataused = character(0), COMMENT.CONFIDENCE = character(0), 
-							COMMENT.ID = integer(0), `CH$NAME1` = character(0), 
+							dbname = character(0), dataused = character(0), COMMENT_CONFIDENCE = character(0), 
+							COMMENT_ID = integer(0), `CH$NAME1` = character(0), 
 							`CH$NAME2` = character(0), `CH$NAME3` = character(0), `CH$NAME4` = character(0),
 							`CH$NAME5` = character(0), `CH$COMPOUND_CLASS` = character(0), 
 							`CH$FORMULA` = character(0), `CH$EXACT_MASS` = numeric(0),` CH$SMILES` = character(0), 
@@ -149,7 +149,7 @@ resetInfolists <- function(mb)
 							`CH$LINK_CHEMSPIDER` = integer(0), `CH$LINK_COMPTOX` = character(0), 
 							AUTHORS = character(0), COPYRIGHT = character(0)
 							), .Names = c("id", "dbcas", 
-							"dbname", "dataused", "COMMENT.CONFIDENCE", "COMMENT.ID", 
+							"dbname", "dataused", "COMMENT_CONFIDENCE", "COMMENT_ID", 
               "CH$NAME1", "CH$NAME2", "CH$NAME3", "CH$NAME4", "CH$NAME5", "CH$COMPOUND_CLASS", "CH$FORMULA", 
 							"CH$EXACT_MASS", "CH$SMILES", "CH$IUPAC", "CH$LINK_CAS", "CH$LINK_CHEBI", 
 							"CH$LINK_HMDB", "CH$LINK_KEGG", "CH$LINK_LIPIDMAPS", "CH$LINK_PUBCHEM",
@@ -254,7 +254,7 @@ mbWorkflow <- function(mb, steps=c(1,2,3,4,5,6,7,8), infolist_path="./infolist.c
 	rmb_log_info("mbWorkflow: Step 2. Export infolist (if required)")
     if(length(mb@mbdata)>0)
     {
-      mbdata <- tibble::as_tibble(flatten(mb@mbdata))
+      mbdata <- flatten(mb@mbdata)
       readr::write_csv(x = mbdata, file = infolist_path, col_names = TRUE, na = "", quote = "needed")
             rmb_log_info(paste("The file", infolist_path, "was generated with new compound information. Please check and edit the table, and add it to your infolist folder."))
       return(mb)
@@ -585,14 +585,19 @@ gatherData <- function(id)
 	
 	if(usebabel){
 		cmdinchikey <- paste0(babeldir, 'obabel -:"',smiles,'" ', '-oinchikey')
-		inchikey_split <- system(cmdinchikey, intern=TRUE, input=smiles, ignore.stderr=TRUE)
-	} else{
-		inchikey <- getCactus(smiles, 'stdinchikey')
+		inchikey_split <- system(cmdinchikey, intern = TRUE, input = smiles, ignore.stderr = TRUE)
+	} else {
+		inchi_key <- getCactus(identifier = smiles, representation = "stdinchikey")
+		
+		if(is.na(inchi_key)) {
+		  inchi_key <- getPcInchiKey(query = smiles, from = "smiles")
+		}
+		
 		if(!is.na(inchikey)){
 			##Split the "InChiKey=" part off the key
-			inchikey_split <- strsplit(inchikey, "=", fixed=TRUE)[[1]][[2]]
-		} else{
-		    inchikey_split <- getPcInchiKey(smiles)
+			inchikey_split <- strsplit(inchi_key, "=", fixed = TRUE)[[1]][[2]]
+		} else {
+		    inchikey_split <- getPcInchiKey(query = smiles, from = "smiles")
 		}
 	}
 	
@@ -1120,7 +1125,7 @@ gatherDataUnknown <- function(id, mode, retrieval){
 #' \code{\link{gatherData}}.
 #' @param row One row of MassBank compound information retrieved from an
 #' infolist.
-#' @return \code{flatten} returns a matrix (not a data frame) to be written to
+#' @return \code{flatten} returns a tibble (not a data frame or matrix) to be written to
 #' CSV.
 #' 
 #' \code{readMbdata} returns a list of type \code{list(id= \var{compoundID},
@@ -1146,7 +1151,7 @@ flatten <- function(mbdata)
   .checkMbSettings()
   
   colNames     <- names(unlist(mbdata[[1]]))
-  commentNames <- colNames[grepl(x = colNames, pattern = "^COMMENT\\.")]
+  commentNames <- colNames[grepl(x = colNames, pattern = "^COMMENT\\_")]
   
   colList <- c(
               "id",
@@ -1154,11 +1159,11 @@ flatten <- function(mbdata)
               "dbname",
               "dataused",
               commentNames,
-              #"COMMENT.CONFIDENCE",
+              #"COMMENT_CONFIDENCE",
               # Note: The field name of the internal id field is replaced with the real name
               # at "compilation" time. Therefore, functions DOWNSTREAM from compileRecord() 
               # must use the full name including the info from options("RMassBank").
-              #"COMMENT.ID",
+              #"COMMENT_ID",
               "CH$NAME1",
               "CH$NAME2",
               "CH$NAME3",
@@ -1177,27 +1182,35 @@ flatten <- function(mbdata)
               "CH$LINK_PUBCHEM",
               "CH$LINK_INCHIKEY",
               "CH$LINK_CHEMSPIDER",
-	          "CH$LINK_COMPTOX"
+	            "CH$LINK_COMPTOX"
 	          )
   # make an empty data frame with the right length
   rows <- length(mbdata)
   cols <- length(colList)
-  mbframe <- matrix(data=NA, nrow=rows, ncol=cols)
-  colnames(mbframe) <- colList
+  
+  mbtbl <- tibble::tibble(!!!colList, .rows = 0, .name_repair = ~ colList)
+  
+  
+  #mbframe <- matrix(data = NA, nrow = rows, ncol = cols)
+  #colnames(mbframe) <- colList
   #browser()
-  for(row in 1:rows)
-  {
+  for(i in 1:rows) {
     # fill in all the data into the dataframe: all columns which 
     # a) exist in the target dataframe and b) exist in the (unlisted) MB record
     # are written into the dataframe.
-    data <- unlist(mbdata[[row]])
+    data <- unlist(mbdata[[i]], use.names = TRUE)
+    names(data) <- gsub("\\.", "_", names(data))
 	# bugfix for the case of only one name
-	if(!("CH$NAME1" %in% names(data)))
-		data[["CH$NAME1"]] <- data[["CH$NAME"]]
-    datacols <- intersect(colList, names(data))
-    mbframe[row,datacols] <- data[datacols]
+	if(!("CH$NAME1" %in% names(data))) {
+		  data[["CH$NAME1"]] <- data[["CH$NAME"]]
+		  }
+  datacols <- intersect(colList, names(data))
+  
+  mbtbl <- mbtbl |> dplyr::bind_rows(data[datacols])
+  
   }
-  return(mbframe)
+  
+  return(mbtbl)
   
 }
 
@@ -1231,8 +1244,8 @@ readMbdata <- function(row)
   # This is not very flexible, as you can see...
     colList <- c(
               commentNames,
-              #"COMMENT.CONFIDENCE",
-              #"COMMENT.ID",
+              #"COMMENT_CONFIDENCE",
+              #"COMMENT_ID",
               "CH$NAME1",
               "CH$NAME2",
               "CH$NAME3",
@@ -1253,10 +1266,10 @@ readMbdata <- function(row)
               "CH$LINK_CHEMSPIDER",
               "CH$LINK_COMPTOX")
   mbdata[["COMMENT"]] = list()
-  #mbdata[["COMMENT"]][["CONFIDENCE"]] <- row[["COMMENT.CONFIDENCE"]]
+  #mbdata[["COMMENT"]][["CONFIDENCE"]] <- row[["COMMENT_CONFIDENCE"]]
   # Again, our ID field. 
-  #mbdata[["COMMENT"]][["ID"]] <- row[["COMMENT.ID"]]
-  mbdata[["COMMENT"]][gsub(x = commentNames, pattern = "^COMMENT\\.", replacement = "")] <- row[commentNames]
+  #mbdata[["COMMENT"]][["ID"]] <- row[["COMMENT_D"]]
+  mbdata[["COMMENT"]][gsub(x = commentNames, pattern = "^COMMENT\\_", replacement = "")] <- row[commentNames]
   
   names = c(row[["CH$NAME1"]], row[["CH$NAME2"]], row[["CH$NAME3"]], row[["CH$NAME4"]], row[["CH$NAME5"]])
   names = names[which(!is.na(names))]
@@ -1283,8 +1296,8 @@ readMbdata <- function(row)
   mbdata[["CH$LINK"]] <- link
 
     ## SP$SAMPLE
-  if(all(nchar(row[["SP.SAMPLE"]]) > 0, row[["SP.SAMPLE"]] != "NA", !is.na(row[["SP.SAMPLE"]]), na.rm = TRUE))
-    mbdata[['SP$SAMPLE']] <- row[["SP.SAMPLE"]]
+  if(all(nchar(row[["SP_SAMPLE"]]) > 0, row[["SP_SAMPLE"]] != "NA", !is.na(row[["SP_SAMPLE"]]), na.rm = TRUE))
+    mbdata[['SP$SAMPLE']] <- row[["SP_SAMPLE"]]
   
   if(!is.na(row[["AUTHORS"]]))
     mbdata[["AUTHORS"]] = row[["AUTHORS"]]
