@@ -189,6 +189,7 @@ jobs:
 
           remotes::install_github(repo = "MassBank/RMassBankData", auth_token = github_pat(quiet = TRUE))
 
+
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = TRUE, upgrade = TRUE)
 
           ## Manually install required packages
