@@ -184,6 +184,10 @@ jobs:
           BiocManager::install("RforMassSpectrometry/MsCoreUtils", ask = FALSE, force = TRUE)
           ## Pass #2 at installing dependencies
           message(paste('****', Sys.time(), 'pass number 2 at installing dependencies: any remaining dependencies ****'))
+          
+          ## Temporaly use the development version of RMassBankData
+          remotes::install_local("RMassBankData")
+          
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = TRUE, upgrade = TRUE)
 
           ## Manually install required packages
