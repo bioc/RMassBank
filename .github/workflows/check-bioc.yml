@@ -186,7 +186,7 @@ jobs:
           message(paste('****', Sys.time(), 'pass number 2 at installing dependencies: any remaining dependencies ****'))
           
           ## Temporaly use the development version of RMassBankData
-          remotes::install_github(repo = "tsufz/RMassBankData", auth_token = "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")
+          remotes::install_github(repo = "tsufz/RMassBankData", auth_token = ${{ secrets.GITHUB_TOKEN }})
           
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = TRUE, upgrade = TRUE)
 
