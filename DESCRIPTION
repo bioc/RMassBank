@@ -12,7 +12,7 @@ Authors@R: c(
     "sneumann@ipb-halle.de"), person(given = "Erik", family = "Muller", role =
     "aut", email = "erik.mueller@ufz.de"), person(given = "Paul", family = "Stahlhofen", role =
     "aut", email = "paul-jonas.stahlhofen@ufz.de"),
-	person(given = "Tobias", family = "Schulze", role = "ctb", email =
+	person(given = "Tobias", family = "Schulze", role = "aut", email =
     "tobias.schulze@ufz.de"), person(given =
     "Hendrik", family = "Treutler", role = "ctb", email =
     "hendrik.treutler@gmail.com") )
