@@ -700,7 +700,7 @@ gatherData <- function(id)
 	## Get DTXSID
 	
 	# Get the api key from the settings
-	api_key <- filterSettings$ccte_api_key
+	api_key = getOption("RMassBank")$settings$ccte_api_key
 	
 	dtxsid <- getDTXSID(key = inchikey_split, api_key = api_key)
 	
@@ -902,7 +902,7 @@ gatherData <- function(id)
 	}
 	
 	link[["INCHIKEY"]] <- inchikey_split
-	link[["COMPTOX"]] <- comptox
+	link[["COMPTOX"]] <- dtxsid
 	if(length(csid)>0) if(any(!is.na(csid))) link[["CHEMSPIDER"]] <- min(as.numeric(as.character(csid[!is.na(csid)])))
 	mbdata[['CH$LINK']] <- link
 		
