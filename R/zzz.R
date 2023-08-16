@@ -7,6 +7,7 @@
 #' @import digest
 #' @import glue
 #' @import httr
+#' @import httr2
 #' @import logger
 #' @import MSnbase
 #' @import mzR
