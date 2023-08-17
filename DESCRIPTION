@@ -36,6 +36,7 @@ Imports:
     ChemmineR,
     data.table,
     digest,
+    dplyr,
     enviPat,
     glue,
     httr,
@@ -52,6 +53,7 @@ Imports:
     rjson,
     S4Vectors,
     tibble,
+    tidyselect,
     webchem,
     XML,
     yaml

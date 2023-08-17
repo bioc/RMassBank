@@ -5,12 +5,12 @@
 #' @importFrom ChemmineR smiles2sdf validSDF write.SDF
 #' @importFrom data.table fread fwrite
 #' @import digest
+#' @importFrom dplyr rename_with select
 #' @import glue
 #' @import httr
 #' @import httr2
 #' @import logger
-#' @import methods
-#' @import MSnbase
+#' @importFrom methods setGeneric setMethod
 #' @import mzR
 #' @import rcdk
 #' @import Rcpp
@@ -20,6 +20,7 @@
 #' @import S4Vectors
 #' @importFrom stats lm loess median predict smooth.spline
 #' @import tibble
+#' @importFrom tidyselect everything
 #' @importFrom utils URLencode capture.output data flush.console 
 #' @importFrom utils packageVersion read.csv read.csv2 setTxtProgressBar
 #' @importFrom utils str txtProgressBar type.convert write.csv write.table
