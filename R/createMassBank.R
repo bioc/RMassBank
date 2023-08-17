@@ -56,6 +56,20 @@ loadInfolist <- function(mb, fileName)
                                 trim_ws = TRUE,
                                 show_col_types = FALSE
                                 )
+  
+  # Fix legacy infolist column names
+  # Firstly, remove the artifact first column
+  if (names(mbdata_new)[1] == "...1") {
+      mbdata_new <- mbdata_new |>
+          dplyr::select(-`...1`)
+  }
+  
+  # Secondly, replace the dots by underscores
+  if (any(grepl("\\.", colnames(mbdata_new)))) {
+      mbdata_new <- mbdata_new |> 
+          dplyr::rename_with(~ gsub("\\.", "_", .), tidyselect::everything())
+  }
+  
   mbdata_new <- as.data.frame(mbdata_new, stringsAsFactors = FALSE)
   
   # Legacy check for loading the Uchem format files.
@@ -664,15 +678,15 @@ gatherData <- function(id)
 		cmdinchikey <- paste0(babeldir, 'obabel -:"',smiles,'" ', '-oinchikey')
 		inchikey_split <- system(cmdinchikey, intern = TRUE, input = smiles, ignore.stderr = TRUE)
 	} else {
-		inchi_key <- getCactus(identifier = smiles, representation = "stdinchikey")
+		inchikey <- getCactus(identifier = smiles, representation = "stdinchikey")
 		
-		if(is.na(inchi_key)) {
-		  inchi_key <- getPcInchiKey(query = smiles, from = "smiles")
+		if(is.na(inchikey)) {
+		  inchikey <- getPcInchiKey(query = smiles, from = "smiles")
 		}
 		
 		if(!is.na(inchikey)){
 			##Split the "InChiKey=" part off the key
-			inchikey_split <- strsplit(inchi_key, "=", fixed = TRUE)[[1]][[2]]
+			inchikey_split <- strsplit(inchikey, "=", fixed = TRUE)[[1]][[2]]
 		} else {
 		    inchikey_split <- getPcInchiKey(query = smiles, from = "smiles")
 		}
@@ -1810,10 +1824,10 @@ exportMassbank_recdata <- function(compiled, recDataFolder)
   for(file in seq_len(length(files)))
   {
     # Read the accession no. from the corresponding "compiled" entry
-    filename <- names(files)[[file]]
-    # use this accession no. as filename
-    filename <- paste(filename, ".txt", sep="")
-    filePath <- file.path(recDataFolder,filename)
+    fileName <- names(files)[[file]]
+    # use this accession no. as fileName
+    fileName <- paste(fileName, ".txt", sep="")
+    filePath <- file.path(recDataFolder,fileName)
     write(files[[file]], filePath)
   }
 }
