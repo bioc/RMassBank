@@ -13,7 +13,7 @@ Authors@R: c(
     person("Erik", "Muller", , , role = "aut",
            comment = c(ORCID = "0000-0003-3288-0439")),
     person("Paul", "Stahlhofen", , , role = "aut"),
-    person("Tobias", "Schulze", , "tobias.schulze@ufz.de", role = "aut",
+    person("Tobias", "Schulze", , "tsufz1@gmail.com", role = "aut",
            comment = c(ORCID = "0000-0002-9744-8914")),
     person("Hendrik", "Treutler", , "hendrik.treutler@gmail.com", role = "ctb")
   )
