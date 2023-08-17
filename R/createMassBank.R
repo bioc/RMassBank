@@ -550,7 +550,7 @@ gatherPubChem <- function(key){
 #' @examples
 #' 
 #' # Gather data for compound ID 131
-#' \dontrun{gatherCCTE("QEIXBXXKTUNWDK-UHFFFAOYSA-N")}
+#' \dontrun{gatherCCTE("QEIXBXXKTUNWDK-UHFFFAOYSA-N", api_key = NA)}
 #' 
 #' @export
 gatherCCTE <- function(key, api_key = NA) {
