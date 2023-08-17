@@ -32,7 +32,6 @@ Depends:
 Imports:
     assertthat,
     Biobase,
-    ChemmineOB,
     ChemmineR,
     data.table,
     digest,
