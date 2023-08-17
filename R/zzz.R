@@ -44,6 +44,13 @@
   attach(RMassBank.env)
 }
 
-utils::globalVariables(c("cpdID", "isotopes","mzCalc"))
+utils::globalVariables(c("cpdID",
+                         "isotopes",
+                         "mzCalc",
+                         "...1",
+                         "occurrenceMatrix",
+                         "c.msmsWSspecs",
+                         "mass.calc",
+                         "updateObjectFromSlots"))
 
 
