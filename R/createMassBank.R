@@ -535,7 +535,7 @@ gatherPubChem <- function(key){
 #' The data retrieved is the US EPA DTXSID, the US EPA chemical dashboard
 #' substance ID, the CAS-RN, the DTX preferred name, and the DTXCID (chemical ID).
 #' 
-#' @usage gatherCCTE(key)
+#' @usage gatherCCTE(key, api_key)
 #' @param key An Inchi-Key
 #' @param api_key An US EPA CCTE API key (personal or application)
 #' @return Returns a list with 4 slots:
