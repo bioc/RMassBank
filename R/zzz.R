@@ -9,6 +9,7 @@
 #' @import httr
 #' @import httr2
 #' @import logger
+#' @import methods
 #' @import MSnbase
 #' @import mzR
 #' @import rcdk
@@ -16,8 +17,8 @@
 #' @import readJDX
 #' @import readr
 #' @import rjson
-#' @importFrom stats lm loess median predict smooth.spline
 #' @import S4Vectors
+#' @importFrom stats lm loess median predict smooth.spline
 #' @import tibble
 #' @importFrom utils URLencode capture.output data flush.console 
 #' @importFrom utils packageVersion read.csv read.csv2 setTxtProgressBar
