@@ -3,9 +3,7 @@
 \name{gatherCCTE}
 \alias{gatherCCTE}
 \title{Retrieve supplemental annotation data from US EPA}
-\usage{
-gatherCCTE(key, api_key)
-}
+\usage{gatherCCTE(key, api_key)}
 \arguments{
 \item{key}{An Inchi-Key}
 
