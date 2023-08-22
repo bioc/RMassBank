@@ -157,7 +157,7 @@ getPcId <- function(query, from = "inchikey")
 #' CCTE REST:
 #' \url{https://api-ccte.epa.gov/docs}
 #' @examples
-#' getPcId("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
+#' getDTXSID("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
 #' 
 #' @export
 getDTXSID <- function(key, api_key)
@@ -226,7 +226,6 @@ getDTXCID <- function(key, api_key)
         
     },
     error=function(e){
-        currEnvir$errorvar <- 1
     })
     
     if(errorvar){
@@ -345,6 +344,56 @@ getCASRN <- function(key, api_key)
     }
 }
 
+#' Search CCTE SMILES
+#' 
+#' Retrieves CCTE SMILES from US EPA for a search term.
+#' 
+#' Only the first result is returned currently. \bold{The function should be
+#' regarded as experimental and has not thoroughly been tested.}
+#' 
+#' @usage getDTXSMILES(key, api_key)
+#' @param key ID to be converted
+#' @param api_key API key for CCTE
+#' @return The SMILES (in string type)
+#' @author Tobias Schulze
+#' @references CCTE search: \url{https://api-ccte.epa.gov/docs} 
+#' 
+#' CCTE REST:
+#' \url{https://api-ccte.epa.gov/docs}
+#' @examples
+#' getDTXSMILES("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
+#' 
+#' @export
+getDTXSMILES <- function(key, api_key)
+    
+{
+    errorvar <- 0
+    currEnvir <- environment()
+    
+    tryCatch({
+        base_url <- paste0("https://api-ccte.epa.gov/chemical/search/equal/", key)
+        url <- httr2::request(base_url)
+        url <- url |> httr2::req_headers("x-api-key" = api_key, "accept" = "application/json")
+        resp <- httr2::req_perform(url)
+        data <- resp |> httr2::resp_body_json()
+        
+    },
+    error=function(e){
+        currEnvir$errorvar <- 1
+    })
+    
+    if(errorvar){
+        return(NA)
+    }
+    
+    smiles <- data[[1]]$smiles
+    
+    if(is.null(smiles)){
+        return(NA)
+    } else{
+        return(smiles)
+    }
+}
 
 #' Retrieve information from CTS
 #' 

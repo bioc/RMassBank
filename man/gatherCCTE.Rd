@@ -3,18 +3,21 @@
 \name{gatherCCTE}
 \alias{gatherCCTE}
 \title{Retrieve supplemental annotation data from US EPA}
-\usage{gatherCCTE(key, api_key)}
+\usage{
+gatherCCTE(key, api_key)
+}
 \arguments{
-\item{key}{An Inchi-Key}
+\item{key}{An Inchi-Key or other chemical identifier (e.g. Chemical name, DTXSID, CASRN, InChIKey, DTXCID)}
 
 \item{api_key}{An US EPA CCTE API key (personal or application)}
 }
 \value{
-Returns a list with 4 slots:
+Returns a list with 5 slots:
 \code{dtxsid} The US EPA chemical dashboard substance id
 \code{dtxcid} The US EPA chemical dashboard chemical id
 \code{preferredName} The US EPA chemical dashboard preferred name
 \code{casrn} The latest CAS registration number
+\code{smiles} The SMILES annotation of the structure
 }
 \description{
 Retrieves annotation data for a compound from the internet service US EPA CCTE 

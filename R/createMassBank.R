@@ -536,13 +536,14 @@ gatherPubChem <- function(key){
 #' substance ID, the CAS-RN, the DTX preferred name, and the DTXCID (chemical ID).
 #' 
 #' @usage gatherCCTE(key, api_key)
-#' @param key An Inchi-Key
+#' @param key An Inchi-Key or other chemical identifier (e.g. Chemical name, DTXSID, CASRN, InChIKey, DTXCID)
 #' @param api_key An US EPA CCTE API key (personal or application)
-#' @return Returns a list with 4 slots:
+#' @return Returns a list with 5 slots:
 #' \code{dtxsid} The US EPA chemical dashboard substance id
 #' \code{dtxcid} The US EPA chemical dashboard chemical id
 #' \code{preferredName} The US EPA chemical dashboard preferred name
 #' \code{casrn} The latest CAS registration number
+#' \code{smiles} The SMILES annotation of the structure
 #' @author Tobias Schulze
 #' @seealso \code{\link{mbWorkflow}}
 #' @references CCTE REST:
@@ -562,6 +563,7 @@ gatherCCTE <- function(key, api_key = NA) {
         CTTE_data$dtxcid <- NA
         CTTE_data$preferredname <- NA
         CTTE_data$casrn <- NA
+        CTTE_data$smiles <- NA
         return(CCTE_data)
     }
     
@@ -596,6 +598,13 @@ gatherCCTE <- function(key, api_key = NA) {
         CCTE_data$casrn <- getCASRN(key, api_key),
         error=function(e){
             CCTE_data$casrn <<- NA
+        })
+    
+    ##Retrieve latest CAS RN
+    tryCatch(
+        CCTE_data$smiles <- getDTXSMILES(key, api_key),
+        error=function(e){
+            CCTE_data$smiles <<- NA
         })
     
     return(CCTE_data)
