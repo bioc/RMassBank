@@ -22,7 +22,9 @@ Only the first result is returned currently. \bold{The function should be
 regarded as experimental and has not thoroughly been tested.}
 }
 \examples{
+\dontrun{
 getPrefName("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
+}
 
 }
 \references{

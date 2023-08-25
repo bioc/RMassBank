@@ -157,8 +157,9 @@ getPcId <- function(query, from = "inchikey")
 #' CCTE REST:
 #' \url{https://api-ccte.epa.gov/docs}
 #' @examples
+#' \dontrun{
 #' getDTXSID("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
-#' 
+#' }
 #' @export
 getDTXSID <- function(key, api_key)
     
@@ -208,8 +209,9 @@ getDTXSID <- function(key, api_key)
 #' CCTE REST:
 #' \url{https://api-ccte.epa.gov/docs}
 #' @examples
+#' \dontrun{
 #' getDTXCID("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
-#' 
+#' }
 #' @export
 getDTXCID <- function(key, api_key)
     
@@ -258,7 +260,9 @@ getDTXCID <- function(key, api_key)
 #' CCTE REST:
 #' \url{https://api-ccte.epa.gov/docs}
 #' @examples
+#' \dontrun{
 #' getPrefName("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
+#' }
 #' 
 #' @export
 getPrefName <- function(key, api_key)
@@ -310,7 +314,9 @@ getPrefName <- function(key, api_key)
 #' CCTE REST:
 #' \url{https://api-ccte.epa.gov/docs}
 #' @examples
+#' \dontrun{
 #' getCASRN("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
+#' }
 #' 
 #' @export
 getCASRN <- function(key, api_key)
@@ -361,7 +367,9 @@ getCASRN <- function(key, api_key)
 #' CCTE REST:
 #' \url{https://api-ccte.epa.gov/docs}
 #' @examples
+#' \dontrun{
 #' getDTXSMILES("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
+#' }
 #' 
 #' @export
 getDTXSMILES <- function(key, api_key)
