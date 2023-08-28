@@ -725,11 +725,19 @@ gatherData <- function(id)
 	# Get the api key from the settings
 	api_key = getOption("RMassBank")$settings$ccte_api_key
 	
-	dtxsid <- getDTXSID(key = inchikey_split, api_key = api_key)
-	
-	if(is.null(dtxsid)){
+	if(!is.null(api_key)) {
+	  dtxsid <- getDTXSID(key = inchikey_split, api_key = api_key)
+	  
+	  if(is.null(dtxsid)){
 	    dtxsid <- NA
+	  }  
 	}
+	else {
+	  dtxsid <- NA
+	}
+	  
+	
+	
 	
 	##Use CTS to retrieve information
 	CTSinfo <- getCtsRecord(inchikey_split)

@@ -22,8 +22,9 @@ Only the first result is returned currently. \bold{The function should be
 regarded as experimental and has not thoroughly been tested.}
 }
 \examples{
+\dontrun{
 getDTXCID("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
-
+}
 }
 \references{
 CCTE search: \url{https://api-ccte.epa.gov/docs} 
