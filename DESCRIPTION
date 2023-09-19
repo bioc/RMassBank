@@ -1,50 +1,79 @@
-Package: RMassBank
 Type: Package
+Package: RMassBank
 Title: Workflow to process tandem MS files and build MassBank records
-Version: 3.11.1.1
+Version: 3.11.2
 Authors@R: c(
-    person(given = "RMassBank at Eawag", email = "massbank@eawag.ch",
-    role=c("cre")),
-    person(given = "Michael A.", family = "Stravs", email =
-    "michael.stravs@eawag.ch", role=c("aut")), person(given = "Emma L.",
-    family = "Schymanski", email = "emma.schymanski@uni.lu", role=c("aut")),
-    person(given = "Steffen", family = "Neumann", role = "aut", email =
-    "sneumann@ipb-halle.de"), person(given = "Erik", family = "Muller", role =
-    "aut", email = "erik.mueller@ufz.de"), person(given = "Paul", family = "Stahlhofen", role =
-    "aut", email = "paul-jonas.stahlhofen@ufz.de"),
-	person(given = "Tobias", family = "Schulze", role = "ctb", email =
-    "tobias.schulze@ufz.de"), person(given =
-    "Hendrik", family = "Treutler", role = "ctb", email =
-    "hendrik.treutler@gmail.com") )
-Author: Michael Stravs, Emma Schymanski, Steffen Neumann, Erik Mueller, with
-    contributions from Tobias Schulze
+    person("RMassBank at Eawag", , , "massbank@eawag.ch", role = "cre"),
+    person("Michael A.", "Stravs", , "michael.stravs@eawag.ch", role = "aut",
+           comment = c(ORCID = "0000-0002-1426-8572")),
+    person("Emma L.", "Schymanski", , "emma.schymanski@uni.lu", role = "aut",
+           comment = c(ORCID = "0000-0001-6868-8145")),
+    person("Steffen", "Neumann", , "sneumann@ipb-halle.de", role = "aut",
+           comment = c(ORCID = "0000-0002-7899-7192")),
+    person("Erik", "Muller", , , role = "aut",
+           comment = c(ORCID = "0000-0003-3288-0439")),
+    person("Paul", "Stahlhofen", , , role = "aut"),
+    person("Tobias", "Schulze", , "tsufz1@gmail.com", role = "aut",
+           comment = c(ORCID = "0000-0002-9744-8914")),
+    person("Hendrik", "Treutler", , "hendrik.treutler@gmail.com", role = "ctb")
+  )
+Author: Michael Stravs, Emma Schymanski, Steffen Neumann, Erik Mueller,
+    Paul Stahlhofen, Tobias Schulze with contributions of Hendrik Treutler
 Maintainer: RMassBank at Eawag <massbank@eawag.ch>
-Description: Workflow to process tandem MS files and build MassBank records.
-    Functions include automated extraction of tandem MS spectra, formula
-    assignment to tandem MS fragments, recalibration of tandem MS spectra with
-    assigned fragments, spectrum cleanup, automated retrieval of compound
-    information from Internet databases, and export to MassBank records.
+Description: Workflow to process tandem MS files and build MassBank
+    records.  Functions include automated extraction of tandem MS spectra,
+    formula assignment to tandem MS fragments, recalibration of tandem MS
+    spectra with assigned fragments, spectrum cleanup, automated retrieval
+    of compound information from Internet databases, and export to
+    MassBank records.
 License: Artistic-2.0
-SystemRequirements: OpenBabel
-VignetteBuilder: knitr
-biocViews: ImmunoOncology, Bioinformatics, MassSpectrometry, Metabolomics, Software
 Depends:
     Rcpp
-Encoding: UTF-8
 Imports:
-    XML,rjson,S4Vectors,digest,
-    rcdk,yaml,mzR,methods,Biobase,MSnbase,httr,
-    enviPat,assertthat,logger,readJDX,webchem,
-    ChemmineR,ChemmineOB,R.utils,data.table,glue,
-    purrr
+    assertthat,
+    Biobase,
+    ChemmineR,
+    data.table,
+    digest,
+    dplyr,
+    enviPat,
+    glue,
+    httr,
+    httr2,
+    logger,
+    methods,
+    MSnbase,
+    mzR,
+    purrr,
+    R.utils,
+    rcdk,
+    readJDX,
+    readr,
+    rjson,
+    S4Vectors,
+    tibble,
+    tidyselect,
+    webchem,
+    XML,
+    yaml
 Suggests:
-    BiocStyle,gplots,RMassBankData (>= 1.33.1),
-    xcms (>= 1.37.1),
+    BiocStyle,
     CAMERA,
-    RUnit,
+    gplots,
     knitr,
-    rmarkdown
-Collate:
+    magick,
+    rmarkdown,
+    RMassBankData (>= 1.33.1),
+    RUnit,
+    xcms (>= 1.37.1)
+VignetteBuilder: 
+    knitr
+biocViews: ImmunoOncology, Bioinformatics, MassSpectrometry, Metabolomics,
+    Software
+Encoding: UTF-8
+RoxygenNote: 7.2.3
+SystemRequirements: OpenBabel
+Collate: 
     'alternateAnalyze.R'
     'formulaCalculator.R'
     'getSplash.R'
@@ -77,4 +106,3 @@ Collate:
     'zzz.R'
     'log_wrapper.R'
     'createCompoundlist.R'
-RoxygenNote: 7.2.3

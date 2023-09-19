@@ -1,20 +1,3 @@
-## For generating the NAMESPACE
-#' @import mzR
-
-#' @import Rcpp 
-#' @import XML 
-#' @import methods 
-#' @import mzR 
-#' @import rcdk 
-#' @import rjson 
-#' @import yaml 
-#' @import digest
-NULL # This is required so that roxygen knows where the first manpage starts
-
-
-# # importClassesFrom mzR ## Causes error 
-# # importMethodsFrom mzR 
-
 #' Extract MS/MS spectra for specified precursor
 #' 
 #' Extracts MS/MS spectra from LC-MS raw data for a specified precursor, specified
@@ -510,7 +493,6 @@ findMsMsHRperxcms <- function(fileName, cpdID, mode="pH", findPeaksArgs = NULL, 
 
 #' @describeIn findMsMsHRperxcms A submethod of findMsMsHrperxcms that retrieves basic spectrum data
 #' @export
-#' @importFrom utils capture.output
 findMsMsHRperxcms.direct <- function(fileName, cpdID, mode="pH", findPeaksArgs = NULL, plots = FALSE, MSe = FALSE) {
 	
 	requireNamespace("CAMERA",quietly=TRUE)

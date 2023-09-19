@@ -1,6 +1,3 @@
-#' @importFrom stats lm loess median predict smooth.spline
-NULL
-
 #' Backup \code{msmsWorkflow} results
 #' 
 #' Writes the results from different \code{msmsWorkflow} steps to a file.

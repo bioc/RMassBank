@@ -1,8 +1,3 @@
-#' @importFrom webchem cir_query
-#' @importFrom ChemmineR smiles2sdf validSDF write.SDF
-#' @importFrom data.table fread fwrite
-#' @import readJDX
-
 #' @title Add a header to a Multiblock JCAMP file
 #'
 #' @description JCAMP files containing multiple blocks are usually structured

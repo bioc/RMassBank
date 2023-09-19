@@ -1,8 +1,3 @@
-#' @import rcdk
-NULL
-
-
-
 #' Silent getformula
 #' 
 #' This is a local function which silences Rcdk get.mol2formula 
@@ -15,7 +10,7 @@ NULL
 #' 
 #' @author stravsmi
 #' @noRd 
-#' @importFrom utils capture.output
+
 .get.mol2formula <- function (molecule, charge = 0) 
 {
 	capture.output(f <- get.mol2formula(molecule, charge))

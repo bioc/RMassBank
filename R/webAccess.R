@@ -1,10 +1,3 @@
-#' @import XML rjson httr
-NULL
-## library(XML)
-## library(httr)
-## library(jsonlite)
-
-
 retrieveDataWithRetry <- function(url, timeout, maximumNumberOfRetries = 5, retryDelayInSeconds = 3){
 
   data <- NULL
@@ -72,7 +65,7 @@ retrieveDataWithRetry <- function(url, timeout, maximumNumberOfRetries = 5, retr
 #' @export 
 #' 
 #' 
-getCactus <- function(identifier,representation){
+getCactus <- function(identifier, representation){
   identifier <- gsub('#', '%23', identifier)
   ret <- tryCatch(httr::GET(paste("https://cactus.nci.nih.gov/chemical/structure/",
                             utils::URLencode(identifier), "/", representation, sep = "")),
@@ -146,6 +139,269 @@ getPcId <- function(query, from = "inchikey")
 	}
 }
 
+
+#' Search CCTE DTXSID
+#' 
+#' Retrieves CCTE DTXSID from US EPA for a search term.
+#' 
+#' Only the first result is returned currently. \bold{The function should be
+#' regarded as experimental and has not thoroughly been tested.}
+#' 
+#' @usage getDTXSID(key, api_key)
+#' @param key ID to be converted
+#' @param api_key API key for CCTE
+#' @return The DTXSID (in string type)
+#' @author Tobias Schulze
+#' @references CCTE search: \url{https://api-ccte.epa.gov/docs} 
+#' 
+#' CCTE REST:
+#' \url{https://api-ccte.epa.gov/docs}
+#' @examples
+#' \dontrun{
+#' getDTXSID("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
+#' }
+#' @export
+getDTXSID <- function(key, api_key)
+    
+{
+    errorvar <- 0
+    currEnvir <- environment()
+    
+    tryCatch({
+        base_url <- paste0("https://api-ccte.epa.gov/chemical/search/equal/", key)
+        url <- httr2::request(base_url)
+        url <- url |> httr2::req_headers("x-api-key" = api_key, "accept" = "application/json")
+        resp <- httr2::req_perform(url)
+        data <- resp |> httr2::resp_body_json()
+        
+    },
+    error=function(e){
+        currEnvir$errorvar <- 1
+    })
+    
+    if(errorvar){
+        return(NA)
+    }
+    
+    dtxsid <- data[[1]]$dtxsid
+    
+    if(is.null(dtxsid)){
+        return(NA)
+    } else{
+        return(dtxsid)
+    }
+}
+
+#' Search CCTE DTXCID
+#' 
+#' Retrieves CCTE DTXCID from US EPA for a search term.
+#' 
+#' Only the first result is returned currently. \bold{The function should be
+#' regarded as experimental and has not thoroughly been tested.}
+#' 
+#' @usage getDTXCID(key, api_key)
+#' @param key ID to be converted
+#' @param api_key API key for CCTE
+#' @return The DTXCID (in string type)
+#' @author Tobias Schulze
+#' @references CCTE search: \url{https://api-ccte.epa.gov/docs} 
+#' 
+#' CCTE REST:
+#' \url{https://api-ccte.epa.gov/docs}
+#' @examples
+#' \dontrun{
+#' getDTXCID("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
+#' }
+#' @export
+getDTXCID <- function(key, api_key)
+    
+{
+    errorvar <- 0
+    currEnvir <- environment()
+    
+    tryCatch({
+        base_url <- paste0("https://api-ccte.epa.gov/chemical/search/equal/", key)
+        url <- httr2::request(base_url)
+        url <- url |> httr2::req_headers("x-api-key" = api_key, "accept" = "application/json")
+        resp <- httr2::req_perform(url)
+        data <- resp |> httr2::resp_body_json()
+        
+    },
+    error=function(e){
+    })
+    
+    if(errorvar){
+        return(NA)
+    }
+    
+    dtxcid <- data[[1]]$dtxcid
+    
+    if(is.null(dtxcid)){
+        return(NA)
+    } else{
+        return(dtxcid)
+    }
+}
+
+#' Search CCTE Preferred Name
+#' 
+#' Retrieves CCTE Preferred Name from US EPA for a search term.
+#' 
+#' Only the first result is returned currently. \bold{The function should be
+#' regarded as experimental and has not thoroughly been tested.}
+#' 
+#' @usage getPrefName(key, api_key)
+#' @param key ID to be converted
+#' @param api_key API key for CCTE
+#' @return The CCTE Preferred Name (in string type)
+#' @author Tobias Schulze
+#' @references CCTE search: \url{https://api-ccte.epa.gov/docs} 
+#' 
+#' CCTE REST:
+#' \url{https://api-ccte.epa.gov/docs}
+#' @examples
+#' \dontrun{
+#' getPrefName("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
+#' }
+#' 
+#' @export
+getPrefName <- function(key, api_key)
+    
+{
+    errorvar <- 0
+    currEnvir <- environment()
+    
+    tryCatch({
+        base_url <- paste0("https://api-ccte.epa.gov/chemical/search/equal/", key)
+        url <- httr2::request(base_url)
+        url <- url |> httr2::req_headers("x-api-key" = api_key, "accept" = "application/json")
+        url |> httr2::req_dry_run()
+        resp <- httr2::req_perform(url)
+        data <- resp |> httr2::resp_body_json()
+        
+    },
+    error=function(e){
+        currEnvir$errorvar <- 1
+    })
+    
+    if(errorvar){
+        return(NA)
+    }
+    
+    pref_name <- data[[1]]$preferredName
+    
+    if(is.null(pref_name)){
+        return(NA)
+    } else{
+        return(pref_name)
+    }
+}
+
+#' Search CCTE CAS registration number
+#' 
+#' Retrieves CCTE CASRN from US EPA for a search term.
+#' 
+#' Only the first result is returned currently. \bold{The function should be
+#' regarded as experimental and has not thoroughly been tested.}
+#' 
+#' @usage getCASRN(key, api_key)
+#' @param key ID to be converted
+#' @param api_key API key for CCTE
+#' @return The CCTE CAS RN (in string type)
+#' @author Tobias Schulze
+#' @references CCTE search: \url{https://api-ccte.epa.gov/docs} 
+#' 
+#' CCTE REST:
+#' \url{https://api-ccte.epa.gov/docs}
+#' @examples
+#' \dontrun{
+#' getCASRN("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
+#' }
+#' 
+#' @export
+getCASRN <- function(key, api_key)
+    
+{
+    errorvar <- 0
+    currEnvir <- environment()
+    
+    tryCatch({
+        base_url <- paste0("https://api-ccte.epa.gov/chemical/search/equal/", key)
+        url <- httr2::request(base_url)
+        url <- url |> httr2::req_headers("x-api-key" = api_key, "accept" = "application/json")
+        resp <- httr2::req_perform(url)
+        data <- resp |> httr2::resp_body_json()
+        
+    },
+    error=function(e){
+        currEnvir$errorvar <- 1
+    })
+    
+    if(errorvar){
+        return(NA)
+    }
+    
+    cas_rn <- data[[1]]$casrn
+    
+    if(is.null(cas_rn)){
+        return(NA)
+    } else{
+        return(cas_rn)
+    }
+}
+
+#' Search CCTE SMILES
+#' 
+#' Retrieves CCTE SMILES from US EPA for a search term.
+#' 
+#' Only the first result is returned currently. \bold{The function should be
+#' regarded as experimental and has not thoroughly been tested.}
+#' 
+#' @usage getDTXSMILES(key, api_key)
+#' @param key ID to be converted
+#' @param api_key API key for CCTE
+#' @return The SMILES (in string type)
+#' @author Tobias Schulze
+#' @references CCTE search: \url{https://api-ccte.epa.gov/docs} 
+#' 
+#' CCTE REST:
+#' \url{https://api-ccte.epa.gov/docs}
+#' @examples
+#' \dontrun{
+#' getDTXSMILES("MKXZASYAUGDDCJ-NJAFHUGGSA-N")
+#' }
+#' 
+#' @export
+getDTXSMILES <- function(key, api_key)
+    
+{
+    errorvar <- 0
+    currEnvir <- environment()
+    
+    tryCatch({
+        base_url <- paste0("https://api-ccte.epa.gov/chemical/search/equal/", key)
+        url <- httr2::request(base_url)
+        url <- url |> httr2::req_headers("x-api-key" = api_key, "accept" = "application/json")
+        resp <- httr2::req_perform(url)
+        data <- resp |> httr2::resp_body_json()
+        
+    },
+    error=function(e){
+        currEnvir$errorvar <- 1
+    })
+    
+    if(errorvar){
+        return(NA)
+    }
+    
+    smiles <- data[[1]]$smiles
+    
+    if(is.null(smiles)){
+        return(NA)
+    } else{
+        return(smiles)
+    }
+}
 
 #' Retrieve information from CTS
 #' 
@@ -511,12 +767,12 @@ getPcIUPAC <- function (query, from = "inchikey")
 getPcInchiKey <- function(query, from = "smiles"){
 	# Get the JSON-Data from Pubchem
 	baseURL <- "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound"
-	url <- paste(baseURL, from, query, "record", "json", sep="/")
+	url <- paste(baseURL, from, query, "json", sep="/")
 	errorvar <- 0
 	currEnvir <- environment()
 	
 	tryCatch({
-		  res <- GET(utils::URLencode(url))
+		  res <- httr::GET(utils::URLencode(url))
 		  data <- httr::content(res, type="text", encoding="UTF-8")
 		},
 		error=function(e){
@@ -527,7 +783,7 @@ getPcInchiKey <- function(query, from = "smiles"){
 		return(NA)
 	}
 	
-	r <- fromJSON(data)
+	r <- rjson::fromJSON(data)
 	
 	# This happens if the InChI key is not found:
 	if(!is.null(r$Fault))

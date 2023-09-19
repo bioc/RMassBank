@@ -54,12 +54,12 @@ writeMgfSpectraSet <- function(object,
 				"exported by MSnbase/RMassBank on ", date())
 	}
 	cat(COM, file = con, sep = "")
-	MSnbase:::writeMgfContent(object@parent, TITLE = NULL, con = con)
+	MSnbase::writeMgfData(object@parent, TITLE = NULL, con = con)
 	for(chi in as.list(object@children))
 	{
 		if(exactPrecursor)
 			chi@precursorMz <- object@mz
-		MSnbase:::writeMgfContent(chi, TITLE=NULL, con=con)
+		MSnbase::writeMgfData(chi, TITLE=NULL, con=con)
 	}	
 }
 
@@ -82,7 +82,7 @@ writeMgfRmbSpectrum2List <- function(object,
 	cat(COM, file = con, sep = "")
 	for(chi in as.list(object))
 	{
-		MSnbase:::writeMgfContent(chi, TITLE=NULL, con=con)
+		MSnbase::writeMgfData(chi, TITLE=NULL, con=con)
 	}	
 }
 

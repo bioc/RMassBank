@@ -2,9 +2,6 @@
 # 
 # Author: stravsmi
 ###############################################################################
-#' @importFrom Biobase isVersioned
-#' @importFrom Biobase isCurrent
-
 .updateObject.RmbSpectrum2 <- setMethod("updateObject", signature(object="RmbSpectrum2"), function(object, ..., verbose = FALSE) 
 		{
       callNextMethod()

@@ -120,6 +120,10 @@ jobs:
           sysreqs=$(Rscript -e 'cat("apt-get update -y && apt-get install -y", paste(gsub("apt-get install -y ", "", remotes::system_requirements("ubuntu", "20.04")), collapse = " "))')
           echo $sysreqs
           sudo -s eval "$sysreqs"
+          
+          # in addition install tesseract
+          
+          sudo apt-get install -y libtesseract-dev libleptonica-dev
 
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macOS-latest'
@@ -184,6 +188,10 @@ jobs:
           BiocManager::install("RforMassSpectrometry/MsCoreUtils", ask = FALSE, force = TRUE)
           ## Pass #2 at installing dependencies
           message(paste('****', Sys.time(), 'pass number 2 at installing dependencies: any remaining dependencies ****'))
+          
+          ## Temporaly use the development version of RMassBankData
+          ## remotes::install_github(repo = "MassBank/RMassBankData")
+
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = TRUE, upgrade = TRUE)
 
           ## Manually install required packages
@@ -191,6 +199,7 @@ jobs:
           BiocManager::install("sneumann/mzR", dependencies = TRUE, ask = FALSE, update=FALSE)
           BiocManager::install("SummarizedExperiment", ask = FALSE, update = FALSE)
           BiocManager::install("msdata")
+          BiocManager::install("magick", dependencies = TRUE, ask = FALSE, update=FALSE)
 
           # BiocManager::install(c("devtools", "usethis", "vdiffr"), dependencies = TRUE, ask = FALSE, update = FALSE)
           ## For running the checks
@@ -198,6 +207,9 @@ jobs:
           remotes::install_cran("rcmdcheck")
           BiocManager::install("BiocCheck")
         shell: Rscript {0}
+        
+        env:
+            GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install BiocGenerics
         if:  env.has_RUnit == 'true'

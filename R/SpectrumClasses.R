@@ -1,6 +1,4 @@
 #' @rawNamespace import(MSnbase, except="header")
-#' @importFrom Biobase classVersion
-#' @import S4Vectors
 NULL
 
 #' @title RMassBank Representation of an MSMS Spectrum
