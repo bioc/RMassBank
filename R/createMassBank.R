@@ -1264,6 +1264,9 @@ flatten <- function(mbdata)
   
   colNames     <- names(unlist(mbdata[[1]]))
   commentNames <- colNames[grepl(x = colNames, pattern = "^COMMENT\\_")]
+  if(!is.null(mbdata[[1]]$COMMENT)) {
+    commentNames <- c(commentNames, glue::glue("COMMENT_{names(mbdata[[1]]$COMMENT)}"))
+  }
   
   colList <- c(
               "id",
@@ -1350,6 +1353,7 @@ readMbdata <- function(row)
     mbdata[['PUBLICATION']] <- getOption("RMassBank")$annotations$publication
   }
   commentNames <- names(row)[grepl(x = names(row), pattern = "^COMMENT\\.")]
+  commentNames <- c(commentNames, names(row)[grepl(x = names(row), pattern = "^COMMENT\\_")])
   commentNames <- commentNames[!is.na(row[commentNames])]
   
   # Read all determined fields from the file
