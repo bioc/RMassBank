@@ -161,14 +161,14 @@ resetInfolists <- function(mb)
 							`CH$LINK_HMDB` = character(0), `CH$LINK_KEGG` = character(0), `CH$LINK_LIPIDMAPS` = character(0), 
 							`CH$LINK_PUBCHEM` = character(0), `CH$LINK_INCHIKEY` = character(0), 
 							`CH$LINK_CHEMSPIDER` = integer(0), `CH$LINK_COMPTOX` = character(0), 
-							AUTHORS = character(0), COPYRIGHT = character(0)
+							AUTHORS = character(0), COPYRIGHT = character(0), PUBLICATION = character(0)
 							), .Names = c("id", "dbcas", 
 							"dbname", "dataused", "COMMENT_CONFIDENCE", "COMMENT_ID", 
               "CH$NAME1", "CH$NAME2", "CH$NAME3", "CH$NAME4", "CH$NAME5", "CH$COMPOUND_CLASS", "CH$FORMULA", 
 							"CH$EXACT_MASS", "CH$SMILES", "CH$IUPAC", "CH$LINK_CAS", "CH$LINK_CHEBI", 
 							"CH$LINK_HMDB", "CH$LINK_KEGG", "CH$LINK_LIPIDMAPS", "CH$LINK_PUBCHEM",
 							"CH$LINK_INCHIKEY", "CH$LINK_CHEMSPIDER", "CH$LINK_COMPTOX", 
-							"AUTHORS", "COPYRIGHT"), row.names = integer(0), class = "data.frame")
+							"AUTHORS", "COPYRIGHT", "PUBLICATION"), row.names = integer(0), class = "data.frame")
 	if(getOption("RMassBank")$include_sp_tags)
 	{
 	  mb@mbdata_archive["SP$SAMPLE"] <- character(0)
@@ -1421,7 +1421,9 @@ readMbdata <- function(row)
   if(!is.na(row[["COPYRIGHT"]]))
     mbdata[["COPYRIGHT"]] = row[["COPYRIGHT"]]
   
-
+  
+  if(!is.na(row[["PUBLICATION"]]))
+    mbdata[["PUBLICATION"]] = row[["PUBLICATION"]]
 
   
   return(mbdata)
