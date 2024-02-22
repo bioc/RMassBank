@@ -1352,6 +1352,8 @@ readMbdata <- function(row)
   if(getOption("RMassBank")$annotations$publication!="") {
     mbdata[['PUBLICATION']] <- getOption("RMassBank")$annotations$publication
   }
+  if(!is.na(row[["PUBLICATION"]]))
+    mbdata[["PUBLICATION"]] = row[["PUBLICATION"]]
   commentNames <- names(row)[grepl(x = names(row), pattern = "^COMMENT\\.")]
   commentNames <- c(commentNames, names(row)[grepl(x = names(row), pattern = "^COMMENT\\_")])
   commentNames <- commentNames[!is.na(row[commentNames])]
@@ -1422,8 +1424,7 @@ readMbdata <- function(row)
     mbdata[["COPYRIGHT"]] = row[["COPYRIGHT"]]
   
   
-  if(!is.na(row[["PUBLICATION"]]))
-    mbdata[["PUBLICATION"]] = row[["PUBLICATION"]]
+
 
   
   return(mbdata)
